@@ -1,6 +1,5 @@
 // src/services/api/authApi.ts
 import { User, LoginPayload, RegisterPayload, AuthTokens, ApiResponse } from '@types';
-import { mockUser, simulateApiDelay } from '@services/mockData';
 import axiosInstance from '@utils/axios';
 
 /**
@@ -13,26 +12,37 @@ import axiosInstance from '@utils/axios';
  * Register a new user
  */
 export const registerUser = async (payload: RegisterPayload): Promise<ApiResponse<User>> => {
-  // Simulate API call
-  await simulateApiDelay();
-
-  // TODO: Replace with actual API call when backend is ready
-  // const response = await axiosInstance.post('/auth/register', payload)
-  // return response.data
-
-  return {
-    success: true,
-    statusCode: 201,
-    message: 'User registered successfully',
-    data: {
-      ...mockUser,
+  try {
+    const response = await axiosInstance.post('/auth/register', {
       email: payload.email,
+      password: payload.password,
       firstName: payload.firstName,
       lastName: payload.lastName,
       phone: payload.phone,
-    },
-    timestamp: new Date().toISOString(),
-  };
+    });
+
+    const { accessToken, refreshToken, ...userData } = response.data;
+
+    localStorage.setItem('auth_token', accessToken);
+    localStorage.setItem('refresh_token', refreshToken);
+
+    return {
+      success: true,
+      statusCode: 201,
+      message: 'User registered successfully',
+      data: {
+        id: userData.userId || userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        phone: userData.phone,
+      } as User,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'Registration failed';
+    throw { success: false, statusCode: error.response?.status || 500, message };
+  }
 };
 
 /**
@@ -46,91 +56,90 @@ export const loginUser = async (
     tokens: AuthTokens;
   }>
 > => {
-  // Simulate API call
-  await simulateApiDelay();
+  try {
+    const response = await axiosInstance.post('/auth/login', {
+      email: payload.email,
+      password: payload.password,
+    });
 
-  // TODO: Replace with actual API call when backend is ready
-  // const response = await axiosInstance.post('/auth/login', payload)
-  // return response.data
+    const { accessToken, refreshToken, ...userData } = response.data;
 
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'Login successful',
-    data: {
-      user: mockUser,
-      tokens: {
-        accessToken: 'mock_access_token_' + Math.random().toString(36).substr(2, 9),
-        refreshToken: 'mock_refresh_token_' + Math.random().toString(36).substr(2, 9),
+    localStorage.setItem('auth_token', accessToken);
+    localStorage.setItem('refresh_token', refreshToken);
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'Login successful',
+      data: {
+        user: {
+          id: userData.userId || userData.id,
+          email: userData.email,
+          firstName: userData.firstName,
+          lastName: userData.lastName,
+          phone: userData.phone,
+        } as User,
+        tokens: {
+          accessToken,
+          refreshToken,
+        },
       },
-    },
-    timestamp: new Date().toISOString(),
-  };
-};
-
-/**
- * Refresh access token
- */
-export const refreshAccessToken = async (
-  refreshToken: string
-): Promise<
-  ApiResponse<{
-    accessToken: string;
-  }>
-> => {
-  // Simulate API call
-  await simulateApiDelay();
-
-  // TODO: Replace with actual API call when backend is ready
-  // const response = await axiosInstance.post('/auth/refresh-token', { refreshToken })
-  // return response.data
-
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'Token refreshed successfully',
-    data: {
-      accessToken: 'mock_access_token_' + Math.random().toString(36).substr(2, 9),
-    },
-    timestamp: new Date().toISOString(),
-  };
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'Login failed';
+    throw { success: false, statusCode: error.response?.status || 500, message };
+  }
 };
 
 /**
  * Logout user
  */
 export const logoutUser = async (): Promise<ApiResponse<null>> => {
-  // Simulate API call
-  await simulateApiDelay();
+  try {
+    await axiosInstance.post('/auth/logout', {});
 
-  // TODO: Replace with actual API call when backend is ready
-  // const response = await axiosInstance.post('/auth/logout')
-  // return response.data
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
 
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'Logout successful',
-    timestamp: new Date().toISOString(),
-  };
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'Logout successful',
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('refresh_token');
+    localStorage.removeItem('user');
+
+    throw { success: false, statusCode: error.response?.status || 500, message: 'Logout failed' };
+  }
 };
 
 /**
  * Get current user profile
  */
 export const getCurrentUser = async (): Promise<ApiResponse<User>> => {
-  // Simulate API call
-  await simulateApiDelay();
+  try {
+    const response = await axiosInstance.get('/auth/me');
 
-  // TODO: Replace with actual API call when backend is ready
-  // const response = await axiosInstance.get('/auth/me')
-  // return response.data
-
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'User fetched successfully',
-    data: mockUser,
-    timestamp: new Date().toISOString(),
-  };
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'User fetched successfully',
+      data: {
+        id: response.data.userId || response.data.id,
+        email: response.data.email,
+        firstName: response.data.firstName,
+        lastName: response.data.lastName,
+        phone: response.data.phone,
+      } as User,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'Failed to fetch user';
+    throw { success: false, statusCode: error.response?.status || 500, message };
+  }
 };

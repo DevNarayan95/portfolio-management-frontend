@@ -16,11 +16,11 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
 
-      <div className="flex flex-1">
-        <Sidebar />
+      <div className="flex flex-1 relative">
+        {/* <Sidebar /> */}
 
-        <main className="flex-1 lg:ml-64">
-          <div className="max-w-7xl mx-auto w-full p-4 lg:p-6">{children}</div>
+        <main className="flex-1 p-4 lg:p-6">
+          <div className="max-w-7xl mx-auto w-full">{children}</div>
         </main>
       </div>
 

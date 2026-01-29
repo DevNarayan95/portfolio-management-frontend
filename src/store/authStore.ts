@@ -21,11 +21,13 @@ export interface AuthStore {
   login: (payload: LoginPayload) => Promise<void>;
   logout: () => Promise<void>;
   fetchCurrentUser: () => Promise<void>;
+  initializeAuth: () => Promise<void>;
   clearError: () => void;
   clearAuth: () => void;
+  setError: (error: string) => void;
 }
 
-export const useAuthStore = create<AuthStore>((set) => ({
+export const useAuthStore = create<AuthStore>((set, get) => ({
   // Initial state
   user: null,
   tokens: null,
@@ -48,9 +50,11 @@ export const useAuthStore = create<AuthStore>((set) => ({
         error: null,
       });
     } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.response?.data?.message || 'Registration failed';
       set({
         isLoading: false,
-        error: error.message || 'Registration failed',
+        error: errorMessage,
       });
       throw error;
     }
@@ -80,9 +84,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
         error: null,
       });
     } catch (error: any) {
+      const errorMessage = error?.message || error?.response?.data?.message || 'Login failed';
       set({
         isLoading: false,
-        error: error.message || 'Login failed',
+        error: errorMessage,
       });
       throw error;
     }
@@ -106,9 +111,17 @@ export const useAuthStore = create<AuthStore>((set) => ({
         error: null,
       });
     } catch (error: any) {
+      // Even if logout fails, clear local state
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+
       set({
+        user: null,
+        tokens: null,
+        isAuthenticated: false,
         isLoading: false,
-        error: error.message || 'Logout failed',
+        error: null,
       });
     }
   },
@@ -123,8 +136,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
       }
 
       const user = response.data!;
-
-      // Check if token exists
       const token = localStorage.getItem('auth_token');
       const isAuthenticated = !!token;
 
@@ -135,17 +146,80 @@ export const useAuthStore = create<AuthStore>((set) => ({
         error: null,
       });
     } catch (error: any) {
+      const errorMessage =
+        error?.message || error?.response?.data?.message || 'Failed to fetch user';
       set({
         isLoading: false,
-        error: error.message || 'Failed to fetch user',
+        error: errorMessage,
         isAuthenticated: false,
         user: null,
+      });
+      throw error;
+    }
+  },
+
+  /**
+   * Initialize auth on app load
+   * Restores user session from stored tokens
+   */
+  initializeAuth: async () => {
+    set({ isLoading: true });
+    try {
+      const token = localStorage.getItem('auth_token');
+      const refreshToken = localStorage.getItem('refresh_token');
+
+      // If no tokens, user is not authenticated
+      if (!token || !refreshToken) {
+        set({
+          isAuthenticated: false,
+          isLoading: false,
+          user: null,
+          error: null,
+        });
+        return;
+      }
+
+      // Try to fetch current user with existing token
+      const response = await getCurrentUser();
+
+      if (response.success && response.data) {
+        set({
+          user: response.data,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
+      } else {
+        throw new Error('Failed to validate session');
+      }
+    } catch (error: any) {
+      // If fetch fails, clear auth state
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('user');
+
+      set({
+        isAuthenticated: false,
+        isLoading: false,
+        user: null,
+        error: null,
       });
     }
   },
 
+  /**
+   * Set error message
+   */
+  setError: (error: string) => set({ error }),
+
+  /**
+   * Clear error message
+   */
   clearError: () => set({ error: null }),
 
+  /**
+   * Clear all auth data
+   */
   clearAuth: () =>
     set({
       user: null,

@@ -44,9 +44,11 @@ export const RegisterForm: React.FC = () => {
       },
       onSubmit: async (values) => {
         try {
-          await register(values);
-          // After successful registration, redirect to login
-          navigate('/login');
+          const result = await register(values);
+          if (result.success) {
+            // After successful registration, redirect to login
+            navigate('/login');
+          }
         } catch {
           // Error is handled by the store
         }

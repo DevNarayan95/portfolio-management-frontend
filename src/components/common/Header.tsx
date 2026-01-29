@@ -9,8 +9,15 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+    const result = await logout();
+    if (result.success) {
+      navigate('/login');
+    }
+  };
+
+  const getInitials = () => {
+    if (!user?.firstName || !user?.lastName) return '?';
+    return `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
   };
 
   return (
@@ -42,9 +49,8 @@ export const Header: React.FC = () => {
           {isAuthenticated && user && (
             <>
               <div className="flex items-center gap-2">
-                <div className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center font-semibold">
-                  {user.firstName.charAt(0)}
-                  {user.lastName.charAt(0)}
+                <div className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center font-semibold text-sm">
+                  {getInitials()}
                 </div>
                 <div className="hidden sm:block">
                   <p className="text-sm font-medium">
@@ -53,6 +59,7 @@ export const Header: React.FC = () => {
                   <p className="text-xs text-blue-100">{user.email}</p>
                 </div>
               </div>
+
               <Button
                 variant="outline"
                 size="sm"

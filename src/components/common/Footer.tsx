@@ -42,9 +42,9 @@ export const Footer: React.FC = () => {
           <div>
             <h3 className="text-white font-semibold mb-4">Contact</h3>
             <p className="text-sm text-gray-400">
-              Email: support@portfoliomanager.com
+              Email: nshaw.dev@gmail.com
               <br />
-              Phone: +1 (555) 123-4567
+              Phone: +60 174 342 061
             </p>
           </div>
         </div>
@@ -57,10 +57,18 @@ export const Footer: React.FC = () => {
             <a href="#" className="text-gray-400 hover:text-white transition-colors">
               Twitter
             </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+            <a
+              href="https://www.linkedin.com/in/narayan-shaw/"
+              target="_blank"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
               LinkedIn
             </a>
-            <a href="#" className="text-gray-400 hover:text-white transition-colors">
+            <a
+              href="https://github.com/DevNarayan95"
+              target="_blank"
+              className="text-gray-400 hover:text-white transition-colors"
+            >
               GitHub
             </a>
           </div>

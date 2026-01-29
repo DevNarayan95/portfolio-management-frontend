@@ -1,8 +1,9 @@
 // src/App.tsx
-import React, { Suspense } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { APP_ROUTES } from '@constants/index';
 import { ProtectedRoute, ErrorBoundary, LoadingSpinner } from '@components/common';
+import { useAuthStore } from '@store/authStore';
 
 // Lazy load pages for better performance
 const HomePage = React.lazy(() => import('@pages/HomePage').then((m) => ({ default: m.HomePage })));
@@ -28,8 +29,24 @@ const NotFoundPage = React.lazy(() =>
 /**
  * App Component
  * Main application component with routing configuration
+ * Initializes authentication on app load
  */
 export const App: React.FC = () => {
+  const { initializeAuth, isLoading } = useAuthStore();
+
+  /**
+   * Initialize authentication on app mount
+   * Restores user session from stored tokens
+   */
+  useEffect(() => {
+    initializeAuth();
+  }, [initializeAuth]);
+
+  // Show loading spinner while initializing auth
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
   return (
     <ErrorBoundary>
       <Router>
