@@ -1,11 +1,12 @@
+// src/services/api/dashboardApi.ts
+import { DashboardSummary, ApiResponse } from '@types';
+import { calculateDashboardSummary, simulateApiDelay } from '@services/mockData';
+import axiosInstance from '@utils/axios';
+
 /**
  * Dashboard API Service
  * This service handles all dashboard-related API calls
  */
-
-import { DashboardSummary, ApiResponse } from '@types/index';
-import { calculateDashboardSummary, simulateApiDelay } from '@services/mockData';
-import axiosInstance from '@utils/axios';
 
 /**
  * Get dashboard summary

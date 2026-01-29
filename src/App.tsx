@@ -1,59 +1,79 @@
-/**
- * Main App Component
- * Application root with routing
- */
-
-import React from 'react';
+// src/App.tsx
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ProtectedRoute } from '@components/common';
-import {
-  HomePage,
-  LoginPage,
-  RegisterPage,
-  DashboardPage,
-  PortfolioListPage,
-  PortfolioDetailPage,
-  NotFoundPage,
-} from '@pages/index';
+import { APP_ROUTES } from '@constants/index';
+import { ProtectedRoute, ErrorBoundary, LoadingSpinner } from '@components/common';
 
+// Lazy load pages for better performance
+const HomePage = React.lazy(() => import('@pages/HomePage').then((m) => ({ default: m.HomePage })));
+const LoginPage = React.lazy(() =>
+  import('@pages/LoginPage').then((m) => ({ default: m.LoginPage }))
+);
+const RegisterPage = React.lazy(() =>
+  import('@pages/RegisterPage').then((m) => ({ default: m.RegisterPage }))
+);
+const DashboardPage = React.lazy(() =>
+  import('@pages/DashboardPage').then((m) => ({ default: m.DashboardPage }))
+);
+const PortfolioListPage = React.lazy(() =>
+  import('@pages/PortfolioListPage').then((m) => ({ default: m.PortfolioListPage }))
+);
+const PortfolioDetailPage = React.lazy(() =>
+  import('@pages/PortfolioDetailPage').then((m) => ({ default: m.PortfolioDetailPage }))
+);
+const NotFoundPage = React.lazy(() =>
+  import('@pages/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
+);
+
+/**
+ * App Component
+ * Main application component with routing configuration
+ */
 export const App: React.FC = () => {
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+    <ErrorBoundary>
+      <Router>
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path={APP_ROUTES.HOME} element={<HomePage />} />
+            <Route path={APP_ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={APP_ROUTES.REGISTER} element={<RegisterPage />} />
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/portfolios"
-          element={
-            <ProtectedRoute>
-              <PortfolioListPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/portfolios/:id"
-          element={
-            <ProtectedRoute>
-              <PortfolioDetailPage />
-            </ProtectedRoute>
-          }
-        />
+            {/* Protected Routes */}
+            <Route
+              path={APP_ROUTES.DASHBOARD}
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path={APP_ROUTES.PORTFOLIOS}
+              element={
+                <ProtectedRoute>
+                  <PortfolioListPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/portfolios/:id"
+              element={
+                <ProtectedRoute>
+                  <PortfolioDetailPage />
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Catch All */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </Router>
+            {/* Catch All */}
+            <Route path="*" element={<Navigate to={APP_ROUTES.NOT_FOUND} replace />} />
+            <Route path={APP_ROUTES.NOT_FOUND} element={<NotFoundPage />} />
+          </Routes>
+        </Suspense>
+      </Router>
+    </ErrorBoundary>
   );
 };
+
+export default App;

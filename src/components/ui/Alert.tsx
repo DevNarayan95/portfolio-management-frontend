@@ -1,9 +1,10 @@
+// src/components/ui/Alert.tsx
+import React from 'react';
+
 /**
  * Alert Component
  * Reusable alert/notification component
  */
-
-import React from 'react';
 
 interface AlertProps {
   type?: 'info' | 'success' | 'warning' | 'error';

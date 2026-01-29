@@ -1,8 +1,5 @@
+// src/utils/helpers.ts
 import { CURRENCY_SYMBOL } from '@constants/index';
-
-/**
- * Utility helper functions
- */
 
 /**
  * Format currency with symbol

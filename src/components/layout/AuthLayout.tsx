@@ -1,9 +1,10 @@
+// src/components/layout/AuthLayout.tsx
+import React from 'react';
+
 /**
  * Auth Layout Component
  * Layout for authentication pages (login, register)
  */
-
-import React from 'react';
 
 interface AuthLayoutProps {
   children: React.ReactNode;

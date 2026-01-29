@@ -1,9 +1,10 @@
+//src/components/ui/Select.tsx
+import React from 'react';
+
 /**
  * Select Component
  * Reusable select/dropdown component
  */
-
-import React from 'react';
 
 interface Option {
   value: string | number;

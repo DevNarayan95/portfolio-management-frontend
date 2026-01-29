@@ -1,8 +1,4 @@
-/**
- * Central API Service Export
- * This file exports all API services for easy access
- */
-
+// src/services/api/index.ts
 export * from './authApi';
 export * from './portfolioApi';
 export * from './investmentApi';

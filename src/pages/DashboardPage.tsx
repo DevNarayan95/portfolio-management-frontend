@@ -1,9 +1,5 @@
-/**
- * Dashboard Page
- * Main dashboard showing portfolio overview
- */
-
-import React, { useEffect } from 'react';
+// src/pages/DashboardPage.tsx
+import React, { useEffect, useRef } from 'react';
 import { MainLayout } from '@components/layout';
 import {
   DashboardStats,
@@ -15,13 +11,22 @@ import { usePortfolio } from '@hooks/usePortfolio';
 import { Spinner, Alert } from '@components/ui';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Dashboard Page
+ * Main dashboard showing portfolio overview
+ */
+
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { dashboardSummary, isLoading, error, fetchDashboardSummary } = usePortfolio();
+  const hasFetched = useRef(false);
 
   useEffect(() => {
-    fetchDashboardSummary();
-  }, [fetchDashboardSummary]);
+    if (!hasFetched.current) {
+      hasFetched.current = true;
+      fetchDashboardSummary();
+    }
+  }, []);
 
   if (isLoading) {
     return (
@@ -33,10 +38,40 @@ export const DashboardPage: React.FC = () => {
     );
   }
 
-  if (error || !dashboardSummary) {
+  if (error) {
     return (
       <MainLayout>
         <Alert type="error" message={error || 'Failed to load dashboard'} />
+        <div className="mt-4 flex justify-center">
+          <button
+            onClick={() => {
+              hasFetched.current = false;
+              fetchDashboardSummary();
+            }}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Retry
+          </button>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!dashboardSummary) {
+    return (
+      <MainLayout>
+        <div className="bg-white rounded-lg shadow-md p-8 text-center">
+          <p className="text-gray-600 mb-4">No data available</p>
+          <button
+            onClick={() => {
+              hasFetched.current = false;
+              fetchDashboardSummary();
+            }}
+            className="text-blue-600 hover:text-blue-700 font-semibold"
+          >
+            Retry
+          </button>
+        </div>
       </MainLayout>
     );
   }
@@ -92,9 +127,11 @@ export const DashboardPage: React.FC = () => {
 
         {/* Distribution */}
         <div>
-          {dashboardSummary.portfolios[0]?.investments && (
-            <PortfolioDistribution investments={dashboardSummary.portfolios[0].investments} />
-          )}
+          {dashboardSummary.portfolios &&
+            dashboardSummary.portfolios.length > 0 &&
+            dashboardSummary.portfolios[0]?.investments && (
+              <PortfolioDistribution investments={dashboardSummary.portfolios[0].investments} />
+            )}
         </div>
       </div>
 
@@ -102,7 +139,7 @@ export const DashboardPage: React.FC = () => {
       <div>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Your Portfolios</h2>
 
-        {dashboardSummary.portfolios.length === 0 ? (
+        {!dashboardSummary.portfolios || dashboardSummary.portfolios.length === 0 ? (
           <div className="bg-white rounded-lg shadow-md p-12 text-center">
             <p className="text-gray-600 mb-4">You haven't created any portfolios yet.</p>
             <button
@@ -121,6 +158,7 @@ export const DashboardPage: React.FC = () => {
                   id: portfolio.portfolioId,
                   userId: '1',
                   name: portfolio.portfolioName,
+                  description: '',
                   totalValue: portfolio.totalValue,
                   totalInvested: portfolio.totalInvested,
                   createdAt: '',

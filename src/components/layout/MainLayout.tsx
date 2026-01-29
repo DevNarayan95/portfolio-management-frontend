@@ -1,10 +1,11 @@
+// src/components/layout/MainLayout.tsx
+import React from 'react';
+import { Header, Sidebar, Footer } from '@components/common';
+
 /**
  * Main Layout Component
  * Wraps the main application with header, sidebar, and footer
  */
-
-import React from 'react';
-import { Header, Sidebar, Footer } from '@components/common';
 
 interface MainLayoutProps {
   children: React.ReactNode;

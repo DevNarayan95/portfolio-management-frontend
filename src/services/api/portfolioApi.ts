@@ -1,11 +1,12 @@
+// src/services/api/portfolioApi.ts
+import { Portfolio, CreatePortfolioPayload, ApiResponse } from '@types';
+import { mockPortfolios, simulateApiDelay } from '@services/mockData';
+import axiosInstance from '@utils/axios';
+
 /**
  * Portfolio API Service
  * This service handles all portfolio-related API calls
  */
-
-import { Portfolio, CreatePortfolioPayload, ApiResponse } from '@types/index';
-import { mockPortfolios, simulateApiDelay } from '@services/mockData';
-import axiosInstance from '@utils/axios';
 
 /**
  * Get all portfolios

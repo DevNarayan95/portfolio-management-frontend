@@ -1,14 +1,15 @@
+// src/components/features/PortfolioDistribution.tsx
+import React from 'react';
+import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { Investment, InvestmentType } from '@types';
+import { Card } from '@components/ui';
+import { CHART_COLORS } from '@constants/index';
+import { INVESTMENT_TYPES } from '@constants/index';
+
 /**
  * Portfolio Distribution Chart Component
  * Displays pie chart of portfolio distribution by investment type
  */
-
-import React from 'react';
-import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
-import { Investment, InvestmentType } from '@types/index';
-import { Card } from '@components/ui';
-import { CHART_COLORS } from '@constants/index';
-import { INVESTMENT_TYPES } from '@constants/index';
 
 interface PortfolioDistributionProps {
   investments: Investment[];

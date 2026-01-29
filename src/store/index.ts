@@ -1,7 +1,3 @@
-/**
- * Central Store Export
- * This file exports all stores for easy access
- */
-
+// src/store/index.ts
 export * from './authStore';
 export * from './portfolioStore';

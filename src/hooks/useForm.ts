@@ -1,10 +1,11 @@
+// src/hooks/useForm.ts
+import { FormError } from '@types';
+import { useState, useCallback } from 'react';
+
 /**
  * Custom Hook for Form Management
  * Provides form state, validation, and submission handling
  */
-
-import { useState, useCallback } from 'react';
-import { FormError } from '@types/index';
 
 interface UseFormOptions<T> {
   initialValues: T;

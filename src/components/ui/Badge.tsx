@@ -1,9 +1,10 @@
+// src/components/ui/Badge.tsx
+import React from 'react';
+
 /**
  * Badge Component
  * Reusable badge/tag component
  */
-
-import React from 'react';
 
 interface BadgeProps {
   children: React.ReactNode;

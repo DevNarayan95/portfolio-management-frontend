@@ -1,13 +1,14 @@
+// src/components/features/PortfolioCard.tsx
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Portfolio } from '@types';
+import { Card, Badge } from '@components/ui';
+import { formatCurrency, formatPercentage, getProfitColor } from '@utils/helpers';
+
 /**
  * Portfolio Card Component
  * Displays portfolio information in card format
  */
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Portfolio } from '@types/index';
-import { Card, Badge } from '@components/ui';
-import { formatCurrency, formatPercentage, getProfitColor } from '@utils/helpers';
 
 interface PortfolioCardProps {
   portfolio: Portfolio;

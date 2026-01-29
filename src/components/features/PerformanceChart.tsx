@@ -1,8 +1,4 @@
-/**
- * Performance Chart Component
- * Displays line chart of portfolio performance over time
- */
-
+// src/components/features/PerformanceChart.tsx
 import React from 'react';
 import {
   LineChart,
@@ -16,6 +12,11 @@ import {
 } from 'recharts';
 import { Card } from '@components/ui';
 import { CHART_COLORS } from '@constants/index';
+
+/**
+ * Performance Chart Component
+ * Displays line chart of portfolio performance over time
+ */
 
 interface PerformanceData {
   date: string;

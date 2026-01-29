@@ -1,8 +1,4 @@
-/**
- * Central Hooks Export
- * This file exports all custom hooks for easy access
- */
-
+// src/hooks/index.ts
 export * from './useAuth';
 export * from './usePortfolio';
 export * from './useFetch';

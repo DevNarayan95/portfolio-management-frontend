@@ -1,19 +1,20 @@
+// src/services/api/authApi.ts
+import { User, LoginPayload, RegisterPayload, AuthTokens, ApiResponse } from '@types';
+import { mockUser, simulateApiDelay } from '@services/mockData';
+import axiosInstance from '@utils/axios';
+
 /**
  * Authentication API Service
  * This service handles all authentication-related API calls
  * Currently uses mock data, easily replaceable with real API calls
  */
 
-import { User, LoginPayload, RegisterPayload, AuthTokens, ApiResponse } from '@types/index'
-import { mockUser, simulateApiDelay } from '@services/mockData'
-import axiosInstance from '@utils/axios'
-
 /**
  * Register a new user
  */
 export const registerUser = async (payload: RegisterPayload): Promise<ApiResponse<User>> => {
   // Simulate API call
-  await simulateApiDelay()
+  await simulateApiDelay();
 
   // TODO: Replace with actual API call when backend is ready
   // const response = await axiosInstance.post('/auth/register', payload)
@@ -25,25 +26,28 @@ export const registerUser = async (payload: RegisterPayload): Promise<ApiRespons
     message: 'User registered successfully',
     data: {
       ...mockUser,
-      ...payload,
+      email: payload.email,
+      firstName: payload.firstName,
+      lastName: payload.lastName,
+      phone: payload.phone,
     },
     timestamp: new Date().toISOString(),
-  }
-}
+  };
+};
 
 /**
  * Login user
  */
 export const loginUser = async (
   payload: LoginPayload
-): Promise
+): Promise<
   ApiResponse<{
-    user: User
-    tokens: AuthTokens
+    user: User;
+    tokens: AuthTokens;
   }>
 > => {
   // Simulate API call
-  await simulateApiDelay()
+  await simulateApiDelay();
 
   // TODO: Replace with actual API call when backend is ready
   // const response = await axiosInstance.post('/auth/login', payload)
@@ -61,21 +65,21 @@ export const loginUser = async (
       },
     },
     timestamp: new Date().toISOString(),
-  }
-}
+  };
+};
 
 /**
  * Refresh access token
  */
 export const refreshAccessToken = async (
   refreshToken: string
-): Promise
+): Promise<
   ApiResponse<{
-    accessToken: string
+    accessToken: string;
   }>
 > => {
   // Simulate API call
-  await simulateApiDelay()
+  await simulateApiDelay();
 
   // TODO: Replace with actual API call when backend is ready
   // const response = await axiosInstance.post('/auth/refresh-token', { refreshToken })
@@ -89,15 +93,15 @@ export const refreshAccessToken = async (
       accessToken: 'mock_access_token_' + Math.random().toString(36).substr(2, 9),
     },
     timestamp: new Date().toISOString(),
-  }
-}
+  };
+};
 
 /**
  * Logout user
  */
 export const logoutUser = async (): Promise<ApiResponse<null>> => {
   // Simulate API call
-  await simulateApiDelay()
+  await simulateApiDelay();
 
   // TODO: Replace with actual API call when backend is ready
   // const response = await axiosInstance.post('/auth/logout')
@@ -108,15 +112,15 @@ export const logoutUser = async (): Promise<ApiResponse<null>> => {
     statusCode: 200,
     message: 'Logout successful',
     timestamp: new Date().toISOString(),
-  }
-}
+  };
+};
 
 /**
  * Get current user profile
  */
 export const getCurrentUser = async (): Promise<ApiResponse<User>> => {
   // Simulate API call
-  await simulateApiDelay()
+  await simulateApiDelay();
 
   // TODO: Replace with actual API call when backend is ready
   // const response = await axiosInstance.get('/auth/me')
@@ -128,5 +132,5 @@ export const getCurrentUser = async (): Promise<ApiResponse<User>> => {
     message: 'User fetched successfully',
     data: mockUser,
     timestamp: new Date().toISOString(),
-  }
-}
+  };
+};

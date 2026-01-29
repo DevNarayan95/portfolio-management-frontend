@@ -1,8 +1,4 @@
-/**
- * Footer Component
- * Application footer
- */
-
+// src/components/common/Footer.tsx
 import React from 'react';
 
 export const Footer: React.FC = () => {

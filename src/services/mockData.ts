@@ -1,9 +1,4 @@
-/**
- * Mock Data Service
- * This service provides mock data for development
- * Can be easily replaced with real API calls by modifying the API services
- */
-
+// src/services/mockData.ts
 import {
   User,
   Portfolio,
@@ -12,7 +7,13 @@ import {
   DashboardSummary,
   InvestmentType,
   TransactionType,
-} from '@types/index';
+} from '@types';
+
+/**
+ * Mock Data Service
+ * This service provides mock data for development
+ * Can be easily replaced with real API calls by modifying the API services
+ */
 
 // Mock User Data
 export const mockUser: User = {

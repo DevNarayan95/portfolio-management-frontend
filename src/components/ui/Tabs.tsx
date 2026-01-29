@@ -1,9 +1,10 @@
+//src/components/ui/Tabs.tsx
+import React, { useState } from 'react';
+
 /**
  * Tabs Component
  * Reusable tabbed interface component
  */
-
-import React, { useState } from 'react';
 
 interface Tab {
   id: string;

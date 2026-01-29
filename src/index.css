@@ -1,13 +1,25 @@
+/* src/index.css */
 /**
- * Global Styles
- * Tailwind CSS and custom global styles
+ * Global Styles - Tailwind CSS and custom global styles
  */
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Custom Scrollbar */
+/* ==================== Custom Variables ==================== */
+:root {
+  --color-primary: #2563eb;
+  --color-success: #059669;
+  --color-danger: #dc2626;
+  --color-warning: #f59e0b;
+  --color-secondary: #64748b;
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 350ms;
+}
+
+/* ==================== Scrollbar Styling ==================== */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -20,26 +32,194 @@
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 4px;
+  transition: background var(--transition-normal) ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
 
-/* Smooth Transitions */
-* {
-  @apply transition-colors duration-200;
+/* ==================== Base Styles ==================== */
+html {
+  scroll-behavior: smooth;
 }
 
-/* Custom Focus Styles */
+body {
+  @apply bg-light text-dark font-sans antialiased;
+  transition: background-color var(--transition-normal) ease;
+}
+
+/* ==================== Focus Styles ==================== */
+:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary-500;
+}
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
-textarea:focus-visible {
-  @apply outline-none;
+textarea:focus-visible,
+[role='button']:focus-visible {
+  @apply outline-2 outline-offset-2 outline-primary-500;
 }
 
-/* Text Selection */
+/* ==================== Selection Styles ==================== */
 ::selection {
-  @apply bg-blue-500 text-white;
+  @apply bg-primary-500 text-white;
+}
+
+/* ==================== Custom Utility Classes ==================== */
+@layer components {
+  .card {
+    @apply rounded-lg bg-white p-6 shadow-card transition-shadow hover:shadow-hover;
+  }
+
+  .btn-primary {
+    @apply rounded-lg bg-primary-600 px-4 py-2 font-semibold text-white transition-colors hover:bg-primary-700 active:bg-primary-800 disabled:bg-secondary-300;
+  }
+
+  .btn-secondary {
+    @apply rounded-lg border-2 border-secondary-300 px-4 py-2 font-semibold text-secondary-700 transition-colors hover:bg-secondary-50 active:bg-secondary-100;
+  }
+
+  .input-field {
+    @apply w-full rounded-lg border border-secondary-300 bg-white px-4 py-2 font-sans transition-colors placeholder-secondary-400 focus:border-primary-500 focus:ring-2 focus:ring-primary-100;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-3 py-1 text-sm font-medium;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 text-green-700;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-100 text-red-700;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-700;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-100 text-blue-700;
+  }
+
+  .container-centered {
+    @apply flex items-center justify-center;
+  }
+
+  .text-truncate {
+    @apply truncate;
+  }
+
+  .text-muted {
+    @apply text-secondary-600;
+  }
+}
+
+/* ==================== Animations ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal) ease-out;
+}
+
+.animate-slide-in-up {
+  animation: slideInUp var(--transition-normal) ease-out;
+}
+
+.animate-slide-in-down {
+  animation: slideInDown var(--transition-normal) ease-out;
+}
+
+/* ==================== Dark Mode Support ==================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #1e293b;
+    --color-text: #f1f5f9;
+  }
+
+  body {
+    @apply bg-dark text-light;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #334155;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #64748b;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .card {
+    @apply bg-secondary-800;
+  }
+}
+
+/* ==================== Responsive Utilities ==================== */
+@media (max-width: 768px) {
+  .hide-mobile {
+    @apply hidden;
+  }
+}
+
+@media (min-width: 769px) {
+  .show-mobile {
+    @apply hidden;
+  }
+}
+
+/* ==================== Print Styles ==================== */
+@media print {
+  body {
+    @apply bg-white;
+  }
+
+  .no-print {
+    @apply hidden;
+  }
 }

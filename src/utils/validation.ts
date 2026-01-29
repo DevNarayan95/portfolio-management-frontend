@@ -1,9 +1,9 @@
-import { FormError } from '@types/index';
+// src/utils/validation.ts
+import { FormError } from '@types';
 
 /**
  * Validation utilities for form inputs
  */
-
 export const validateEmail = (email: string): string | null => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email) return 'Email is required';

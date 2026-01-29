@@ -1,13 +1,14 @@
+// src/components/features/InvestmentList.tsx
+import React from 'react';
+import { Investment } from '@types';
+import { Card, Badge } from '@components/ui';
+import { formatCurrency, formatPercentage, getProfitColor, calculateProfit } from '@utils/helpers';
+import { INVESTMENT_TYPES } from '@constants/index';
+
 /**
  * Investment List Component
  * Displays list of investments in a portfolio
  */
-
-import React from 'react';
-import { Investment, InvestmentType } from '@types/index';
-import { Card, Badge } from '@components/ui';
-import { formatCurrency, formatPercentage, getProfitColor, calculateProfit } from '@utils/helpers';
-import { INVESTMENT_TYPES } from '@constants/index';
 
 interface InvestmentListProps {
   investments: Investment[];

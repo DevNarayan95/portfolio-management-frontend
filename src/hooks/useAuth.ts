@@ -1,11 +1,11 @@
+// src/hooks/useAuth.ts
+import { useEffect } from 'react';
+import { useAuthStore } from '@store/authStore';
+
 /**
  * Custom Hook for Authentication
  * Provides easy access to auth store and common auth operations
  */
-
-import { useEffect } from 'react';
-import { useAuthStore } from '@store/authStore';
-import { LoginPayload, RegisterPayload } from '@types/index';
 
 export const useAuth = () => {
   const {

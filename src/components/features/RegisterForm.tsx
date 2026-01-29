@@ -1,15 +1,16 @@
-/**
- * Register Form Component
- * Handles user registration with validation
- */
-
+// src/components/features/RegisterForm.tsx
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@hooks/useAuth';
 import { useForm } from '@hooks/useForm';
 import { Input, Button, Alert } from '@components/ui';
 import { validateEmail, validatePassword, validateRequired } from '@utils/validation';
-import { RegisterPayload } from '@types/index';
+import { RegisterPayload } from '@types';
+
+/**
+ * Register Form Component
+ * Handles user registration with validation
+ */
 
 export const RegisterForm: React.FC = () => {
   const navigate = useNavigate();

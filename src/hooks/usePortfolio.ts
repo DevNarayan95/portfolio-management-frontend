@@ -1,14 +1,12 @@
+// src/hooks/usePortfolio.ts
+import { usePortfolioStore } from '@store/portfolioStore';
+import { useCallback } from 'react';
+import { CreatePortfolioPayload, CreateInvestmentPayload, UpdateInvestmentPayload } from '@types';
+
 /**
  * Custom Hook for Portfolio Management
  * Provides easy access to portfolio store and operations
  */
-
-import { usePortfolioStore } from '@store/portfolioStore';
-import {
-  CreatePortfolioPayload,
-  CreateInvestmentPayload,
-  UpdateInvestmentPayload,
-} from '@types/index';
 
 export const usePortfolio = () => {
   const {
@@ -32,6 +30,23 @@ export const usePortfolio = () => {
     clearPortfolioData,
   } = usePortfolioStore();
 
+  // Wrap functions with useCallback to maintain reference
+  const memoizedFetchDashboard = useCallback(() => {
+    return fetchDashboardSummary();
+  }, []);
+
+  const memoizedFetchPortfolios = useCallback(() => {
+    return fetchPortfolios();
+  }, []);
+
+  const memoizedFetchPortfolioById = useCallback((id: string) => {
+    return fetchPortfolioById(id);
+  }, []);
+
+  const memoizedFetchInvestments = useCallback((portfolioId: string) => {
+    return fetchInvestments(portfolioId);
+  }, []);
+
   return {
     portfolios,
     currentPortfolio,
@@ -39,16 +54,16 @@ export const usePortfolio = () => {
     dashboardSummary,
     isLoading,
     error,
-    fetchPortfolios,
-    fetchPortfolioById,
+    fetchPortfolios: memoizedFetchPortfolios,
+    fetchPortfolioById: memoizedFetchPortfolioById,
     createNewPortfolio,
     updateCurrentPortfolio,
     deleteCurrentPortfolio,
-    fetchInvestments,
+    fetchInvestments: memoizedFetchInvestments,
     addInvestment,
     updateCurrentInvestment,
     removeInvestment,
-    fetchDashboardSummary,
+    fetchDashboardSummary: memoizedFetchDashboard,
     clearError,
     clearPortfolioData,
   };

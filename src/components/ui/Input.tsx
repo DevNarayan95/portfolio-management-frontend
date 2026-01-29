@@ -1,9 +1,10 @@
+//src/components/ui/Input.tsx
+import React from 'react';
+
 /**
  * Input Component
  * Reusable input field with validation support
  */
-
-import React from 'react';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;

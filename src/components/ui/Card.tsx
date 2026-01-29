@@ -1,9 +1,10 @@
+// src/components/ui/Card.tsx
+import React from 'react';
+
 /**
  * Card Component
  * Reusable card component for content grouping
  */
-
-import React from 'react';
 
 interface CardProps {
   children: React.ReactNode;

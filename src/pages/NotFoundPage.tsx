@@ -1,11 +1,12 @@
+// src/pages/NotFoundPage.tsx
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from '@components/ui';
+
 /**
  * Not Found Page (404)
  * Displayed when a page is not found
  */
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Button } from '@components/ui';
 
 export const NotFoundPage: React.FC = () => {
   return (

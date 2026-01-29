@@ -1,16 +1,12 @@
+// src/services/api/transactionApi.ts
+import { Transaction, CreateTransactionPayload, ApiResponse, PaginatedResponse } from '@types';
+import { mockTransactions, simulateApiDelay } from '@services/mockData';
+import axiosInstance from '@utils/axios';
+
 /**
  * Transaction API Service
  * This service handles all transaction-related API calls
  */
-
-import {
-  Transaction,
-  CreateTransactionPayload,
-  ApiResponse,
-  PaginatedResponse,
-} from '@types/index';
-import { mockTransactions, simulateApiDelay } from '@services/mockData';
-import axiosInstance from '@utils/axios';
 
 /**
  * Get transactions for a portfolio with pagination
@@ -103,6 +99,7 @@ export const createTransaction = async (
     ...payload,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    amount: 0,
   };
 
   return {

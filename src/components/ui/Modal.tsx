@@ -1,10 +1,11 @@
+//src/components/ui/Modal.tsx
+import React from 'react';
+import { Button } from './Button';
+
 /**
  * Modal Component
  * Reusable modal dialog component
  */
-
-import React from 'react';
-import { Button } from './Button';
 
 interface ModalProps {
   isOpen: boolean;

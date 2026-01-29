@@ -1,15 +1,16 @@
-/**
- * Login Form Component
- * Handles user login with validation
- */
-
+// src/components/features/LoginForm.tsx
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@hooks/useAuth';
 import { useForm } from '@hooks/useForm';
 import { Input, Button, Alert } from '@components/ui';
 import { validateEmail, validatePassword } from '@utils/validation';
-import { LoginPayload } from '@types/index';
+import { LoginPayload } from '@types';
+
+/**
+ * Login Form Component
+ * Handles user login with validation
+ */
 
 export const LoginForm: React.FC = () => {
   const navigate = useNavigate();

@@ -1,6 +1,4 @@
-/**
- * Type definitions for the Portfolio Management System
- */
+// src/types/index.ts
 
 // Authentication Types
 export interface User {

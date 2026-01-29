@@ -1,27 +1,32 @@
-/**
- * Portfolio Store (Zustand)
- * Manages portfolio state globally
- */
-
+// src/store/portfolioStore.ts
 import { create } from 'zustand';
-import { Portfolio, Investment, DashboardSummary } from '@types/index';
+import {
+  Portfolio,
+  Investment,
+  DashboardSummary,
+  CreatePortfolioPayload,
+  CreateInvestmentPayload,
+  UpdateInvestmentPayload,
+} from '@types';
 import {
   getAllPortfolios,
   getPortfolioById,
   createPortfolio,
   updatePortfolio,
   deletePortfolio,
-  CreatePortfolioPayload,
 } from '@services/api/portfolioApi';
 import {
   getInvestmentsByPortfolio,
-  CreateInvestmentPayload,
   createInvestment,
   updateInvestment,
   deleteInvestment,
-  UpdateInvestmentPayload,
 } from '@services/api/investmentApi';
 import { getDashboardSummary } from '@services/api/dashboardApi';
+
+/**
+ * Portfolio Store (Zustand)
+ * Manages portfolio state globally
+ */
 
 export interface PortfolioStore {
   // State
@@ -56,299 +61,303 @@ export interface PortfolioStore {
   clearPortfolioData: () => void;
 }
 
-export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
-  // Initial state
-  portfolios: [],
-  currentPortfolio: null,
-  investments: [],
-  dashboardSummary: null,
-  isLoading: false,
-  error: null,
+export const usePortfolioStore = create<PortfolioStore>((set, get) => {
+  // Create a stable reference to actions
+  const actions = {
+    fetchPortfolios: async () => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await getAllPortfolios();
 
-  // Portfolio Actions
-  fetchPortfolios: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await getAllPortfolios();
+        if (!response.success) {
+          throw new Error(response.message);
+        }
 
-      if (!response.success) {
-        throw new Error(response.message);
+        set({
+          portfolios: response.data || [],
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to fetch portfolios',
+        });
       }
+    },
 
-      set({
-        portfolios: response.data || [],
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to fetch portfolios',
-      });
-    }
-  },
+    fetchPortfolioById: async (id: string) => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await getPortfolioById(id);
 
-  fetchPortfolioById: async (id: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await getPortfolioById(id);
+        if (!response.success) {
+          throw new Error(response.message);
+        }
 
-      if (!response.success) {
-        throw new Error(response.message);
+        set({
+          currentPortfolio: response.data || null,
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to fetch portfolio',
+        });
       }
+    },
 
-      set({
-        currentPortfolio: response.data || null,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to fetch portfolio',
-      });
-    }
-  },
+    createNewPortfolio: async (payload: CreatePortfolioPayload) => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await createPortfolio(payload);
 
-  createNewPortfolio: async (payload: CreatePortfolioPayload) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await createPortfolio(payload);
+        if (!response.success) {
+          throw new Error(response.message);
+        }
 
-      if (!response.success) {
-        throw new Error(response.message);
+        const newPortfolio = response.data!;
+        const state = get();
+
+        set({
+          portfolios: [...state.portfolios, newPortfolio],
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to create portfolio',
+        });
+        throw error;
       }
+    },
 
-      const newPortfolio = response.data!;
+    updateCurrentPortfolio: async (payload: Partial<CreatePortfolioPayload>) => {
       const state = get();
-
-      set({
-        portfolios: [...state.portfolios, newPortfolio],
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to create portfolio',
-      });
-      throw error;
-    }
-  },
-
-  updateCurrentPortfolio: async (payload: Partial<CreatePortfolioPayload>) => {
-    const state = get();
-    if (!state.currentPortfolio) {
-      set({ error: 'No portfolio selected' });
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-    try {
-      const response = await updatePortfolio(state.currentPortfolio.id, payload);
-
-      if (!response.success) {
-        throw new Error(response.message);
+      if (!state.currentPortfolio) {
+        set({ error: 'No portfolio selected' });
+        return;
       }
 
-      const updatedPortfolio = response.data!;
+      set({ isLoading: true, error: null });
+      try {
+        const response = await updatePortfolio(state.currentPortfolio.id, payload);
 
-      set({
-        currentPortfolio: updatedPortfolio,
-        portfolios: state.portfolios.map((p) =>
-          p.id === updatedPortfolio.id ? updatedPortfolio : p
-        ),
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to update portfolio',
-      });
-      throw error;
-    }
-  },
+        if (!response.success) {
+          throw new Error(response.message);
+        }
 
-  deleteCurrentPortfolio: async () => {
-    const state = get();
-    if (!state.currentPortfolio) {
-      set({ error: 'No portfolio selected' });
-      return;
-    }
+        const updatedPortfolio = response.data!;
 
-    set({ isLoading: true, error: null });
-    try {
-      const response = await deletePortfolio(state.currentPortfolio.id);
+        set({
+          currentPortfolio: updatedPortfolio,
+          portfolios: state.portfolios.map((p) =>
+            p.id === updatedPortfolio.id ? updatedPortfolio : p
+          ),
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to update portfolio',
+        });
+        throw error;
+      }
+    },
 
-      if (!response.success) {
-        throw new Error(response.message);
+    deleteCurrentPortfolio: async () => {
+      const state = get();
+      if (!state.currentPortfolio) {
+        set({ error: 'No portfolio selected' });
+        return;
       }
 
+      set({ isLoading: true, error: null });
+      try {
+        const response = await deletePortfolio(state.currentPortfolio.id);
+
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+
+        set({
+          portfolios: state.portfolios.filter((p) => p.id !== state.currentPortfolio!.id),
+          currentPortfolio: null,
+          investments: [],
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to delete portfolio',
+        });
+        throw error;
+      }
+    },
+
+    fetchInvestments: async (portfolioId: string) => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await getInvestmentsByPortfolio(portfolioId);
+
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+
+        set({
+          investments: response.data || [],
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to fetch investments',
+        });
+      }
+    },
+
+    addInvestment: async (payload: CreateInvestmentPayload) => {
+      const state = get();
+      if (!state.currentPortfolio) {
+        set({ error: 'No portfolio selected' });
+        return;
+      }
+
+      set({ isLoading: true, error: null });
+      try {
+        const response = await createInvestment(state.currentPortfolio.id, payload);
+
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+
+        const newInvestment = response.data!;
+
+        set({
+          investments: [...state.investments, newInvestment],
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to add investment',
+        });
+        throw error;
+      }
+    },
+
+    updateCurrentInvestment: async (investmentId: string, payload: UpdateInvestmentPayload) => {
+      const state = get();
+      if (!state.currentPortfolio) {
+        set({ error: 'No portfolio selected' });
+        return;
+      }
+
+      set({ isLoading: true, error: null });
+      try {
+        const response = await updateInvestment(state.currentPortfolio.id, investmentId, payload);
+
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+
+        const updatedInvestment = response.data!;
+
+        set({
+          investments: state.investments.map((inv) =>
+            inv.id === updatedInvestment.id ? updatedInvestment : inv
+          ),
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to update investment',
+        });
+        throw error;
+      }
+    },
+
+    removeInvestment: async (investmentId: string) => {
+      const state = get();
+      if (!state.currentPortfolio) {
+        set({ error: 'No portfolio selected' });
+        return;
+      }
+
+      set({ isLoading: true, error: null });
+      try {
+        const response = await deleteInvestment(state.currentPortfolio.id, investmentId);
+
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+
+        set({
+          investments: state.investments.filter((inv) => inv.id !== investmentId),
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to delete investment',
+        });
+        throw error;
+      }
+    },
+
+    fetchDashboardSummary: async () => {
+      set({ isLoading: true, error: null });
+      try {
+        const response = await getDashboardSummary();
+
+        if (!response.success) {
+          throw new Error(response.message);
+        }
+
+        set({
+          dashboardSummary: response.data || null,
+          isLoading: false,
+          error: null,
+        });
+      } catch (error: any) {
+        set({
+          isLoading: false,
+          error: error.message || 'Failed to fetch dashboard summary',
+        });
+      }
+    },
+
+    clearError: () => set({ error: null }),
+
+    clearPortfolioData: () =>
       set({
-        portfolios: state.portfolios.filter((p) => p.id !== state.currentPortfolio!.id),
+        portfolios: [],
         currentPortfolio: null,
         investments: [],
-        isLoading: false,
+        dashboardSummary: null,
         error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to delete portfolio',
-      });
-      throw error;
-    }
-  },
+      }),
+  };
 
-  // Investment Actions
-  fetchInvestments: async (portfolioId: string) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await getInvestmentsByPortfolio(portfolioId);
+  return {
+    // Initial state
+    portfolios: [],
+    currentPortfolio: null,
+    investments: [],
+    dashboardSummary: null,
+    isLoading: false,
+    error: null,
 
-      if (!response.success) {
-        throw new Error(response.message);
-      }
-
-      set({
-        investments: response.data || [],
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to fetch investments',
-      });
-    }
-  },
-
-  addInvestment: async (payload: CreateInvestmentPayload) => {
-    const state = get();
-    if (!state.currentPortfolio) {
-      set({ error: 'No portfolio selected' });
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-    try {
-      const response = await createInvestment(state.currentPortfolio.id, payload);
-
-      if (!response.success) {
-        throw new Error(response.message);
-      }
-
-      const newInvestment = response.data!;
-
-      set({
-        investments: [...state.investments, newInvestment],
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to add investment',
-      });
-      throw error;
-    }
-  },
-
-  updateCurrentInvestment: async (investmentId: string, payload: UpdateInvestmentPayload) => {
-    const state = get();
-    if (!state.currentPortfolio) {
-      set({ error: 'No portfolio selected' });
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-    try {
-      const response = await updateInvestment(state.currentPortfolio.id, investmentId, payload);
-
-      if (!response.success) {
-        throw new Error(response.message);
-      }
-
-      const updatedInvestment = response.data!;
-
-      set({
-        investments: state.investments.map((inv) =>
-          inv.id === updatedInvestment.id ? updatedInvestment : inv
-        ),
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to update investment',
-      });
-      throw error;
-    }
-  },
-
-  removeInvestment: async (investmentId: string) => {
-    const state = get();
-    if (!state.currentPortfolio) {
-      set({ error: 'No portfolio selected' });
-      return;
-    }
-
-    set({ isLoading: true, error: null });
-    try {
-      const response = await deleteInvestment(state.currentPortfolio.id, investmentId);
-
-      if (!response.success) {
-        throw new Error(response.message);
-      }
-
-      set({
-        investments: state.investments.filter((inv) => inv.id !== investmentId),
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to delete investment',
-      });
-      throw error;
-    }
-  },
-
-  // Dashboard Actions
-  fetchDashboardSummary: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await getDashboardSummary();
-
-      if (!response.success) {
-        throw new Error(response.message);
-      }
-
-      set({
-        dashboardSummary: response.data || null,
-        isLoading: false,
-        error: null,
-      });
-    } catch (error: any) {
-      set({
-        isLoading: false,
-        error: error.message || 'Failed to fetch dashboard summary',
-      });
-    }
-  },
-
-  // Utility Actions
-  clearError: () => set({ error: null }),
-
-  clearPortfolioData: () =>
-    set({
-      portfolios: [],
-      currentPortfolio: null,
-      investments: [],
-      dashboardSummary: null,
-      error: null,
-    }),
-}));
+    // Actions
+    ...actions,
+  };
+});

@@ -1,8 +1,4 @@
-/**
- * Portfolio List Page
- * Display all portfolios and allow creating new ones
- */
-
+// src/pages/PortfolioListPage.tsx
 import React, { useEffect, useState } from 'react';
 import { MainLayout } from '@components/layout';
 import { PortfolioCard } from '@components/features';
@@ -11,7 +7,12 @@ import { Button, Spinner, Alert, Modal } from '@components/ui';
 import { Card } from '@components/ui';
 import { useForm } from '@hooks/useForm';
 import { Input } from '@components/ui';
-import { CreatePortfolioPayload } from '@types/index';
+import { CreatePortfolioPayload } from '@types';
+
+/**
+ * Portfolio List Page
+ * Display all portfolios and allow creating new ones
+ */
 
 export const PortfolioListPage: React.FC = () => {
   const { portfolios, dashboardSummary, isLoading, error, fetchPortfolios, createNewPortfolio } =

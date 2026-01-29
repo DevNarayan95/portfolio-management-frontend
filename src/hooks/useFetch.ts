@@ -1,9 +1,10 @@
+// src/hooks/useFetch.ts
+import { useState, useCallback } from 'react';
+
 /**
  * Custom Hook for Data Fetching
  * Provides a reusable hook for API calls with loading and error states
  */
-
-import { useState, useCallback } from 'react';
 
 interface UseFetchOptions {
   onSuccess?: (data: any) => void;

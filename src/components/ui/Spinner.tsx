@@ -1,9 +1,10 @@
+//src/components/ui/Spinner.tsx
+import React from 'react';
+
 /**
  * Spinner Component
  * Reusable loading spinner
  */
-
-import React from 'react';
 
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';

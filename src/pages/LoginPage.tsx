@@ -1,13 +1,14 @@
-/**
- * Login Page
- * User login page
- */
-
+// src/pages/LoginPage.tsx
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@hooks/useAuth';
 import { AuthLayout } from '@components/layout';
 import { LoginForm } from '@components/features';
+
+/**
+ * Login Page
+ * User login page
+ */
 
 export const LoginPage: React.FC = () => {
   const { isAuthenticated } = useAuth();

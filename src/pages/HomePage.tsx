@@ -1,20 +1,23 @@
+// src/pages/HomePage.tsx
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '@hooks/useAuth';
+import { Button } from '@components/ui';
+
 /**
  * Home Page
  * Landing page for unauthenticated users
  */
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '@hooks/useAuth';
-import { Button } from '@components/ui';
-
 export const HomePage: React.FC = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  if (isAuthenticated) {
-    navigate('/dashboard');
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-600">
@@ -28,15 +31,14 @@ export const HomePage: React.FC = () => {
 
           <div className="flex gap-4">
             <Link to="/login">
-              <Button
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:bg-opacity-10"
-              >
+              <button className="px-4 py-2 text-white border-2 border-white rounded-lg hover:bg-white hover:bg-opacity-10 transition-all font-semibold">
                 Login
-              </Button>
+              </button>
             </Link>
             <Link to="/register">
-              <Button className="bg-white text-blue-600 hover:bg-gray-100">Sign Up</Button>
+              <button className="px-4 py-2 bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-all font-semibold shadow-lg">
+                Sign Up
+              </button>
             </Link>
           </div>
         </div>
@@ -53,18 +55,14 @@ export const HomePage: React.FC = () => {
 
           <div className="flex gap-4 justify-center flex-wrap">
             <Link to="/register">
-              <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <button className="px-8 py-3 text-lg bg-white text-blue-600 rounded-lg hover:bg-gray-100 transition-all font-semibold shadow-lg">
                 Get Started Free
-              </Button>
+              </button>
             </Link>
             <Link to="/login">
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:bg-opacity-10"
-              >
+              <button className="px-8 py-3 text-lg text-white border-2 border-white rounded-lg hover:bg-white hover:bg-opacity-10 transition-all font-semibold">
                 Sign In
-              </Button>
+              </button>
             </Link>
           </div>
         </div>

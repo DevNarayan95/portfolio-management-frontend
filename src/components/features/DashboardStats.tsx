@@ -1,12 +1,13 @@
+// src/components/features/DashboardStats.tsx
+import React from 'react';
+import { DashboardSummary } from '@types';
+import { Card } from '@components/ui';
+import { formatCurrency, formatPercentage, getProfitColor } from '@utils/helpers';
+
 /**
  * Dashboard Stats Component
  * Displays key statistics on the dashboard
  */
-
-import React from 'react';
-import { DashboardSummary } from '@types/index';
-import { Card } from '@components/ui';
-import { formatCurrency, formatPercentage, getProfitColor } from '@utils/helpers';
 
 interface DashboardStatsProps {
   summary: DashboardSummary;

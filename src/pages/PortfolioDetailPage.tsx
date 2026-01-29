@@ -1,8 +1,4 @@
-/**
- * Portfolio Detail Page
- * Show details of a specific portfolio with investments and transactions
- */
-
+// src/pages/PortfolioDetailPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@components/layout';
@@ -14,13 +10,18 @@ import {
   CreateInvestmentPayload,
   CreateTransactionPayload,
   TransactionType,
-} from '@types/index';
+} from '@types';
 import { mockTransactions } from '@services/mockData';
 import { formatCurrency, formatPercentage, getProfitColor } from '@utils/helpers';
 import { useForm } from '@hooks/useForm';
 import { Input, Select } from '@components/ui';
 import { validateNumber } from '@utils/validation';
 import { TRANSACTION_TYPES } from '@constants/index';
+
+/**
+ * Portfolio Detail Page
+ * Show details of a specific portfolio with investments and transactions
+ */
 
 export const PortfolioDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -235,7 +236,11 @@ export const PortfolioDetailPage: React.FC = () => {
           setIsTransactionModalOpen(false);
           resetTxnForm();
         }}
-        onConfirm={handleTxnSubmit as any}
+        onConfirm={async () => {
+          handleTxnSubmit({
+            preventDefault: () => {},
+          } as React.FormEvent<HTMLFormElement>);
+        }}
         confirmText="Add Transaction"
       >
         <form className="space-y-4">

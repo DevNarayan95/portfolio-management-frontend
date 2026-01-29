@@ -1,6 +1,3 @@
-/**
- * Central Layout Components Export
- */
-
+// src/components/layout/index.ts
 export * from './MainLayout';
 export * from './AuthLayout';

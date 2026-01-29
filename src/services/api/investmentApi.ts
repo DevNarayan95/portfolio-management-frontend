@@ -1,16 +1,12 @@
+// src/services/api/investmentApi.ts
+import { Investment, CreateInvestmentPayload, UpdateInvestmentPayload, ApiResponse } from '@types';
+import { mockInvestments, simulateApiDelay } from '@services/mockData';
+import axiosInstance from '@utils/axios';
+
 /**
  * Investment API Service
  * This service handles all investment-related API calls
  */
-
-import {
-  Investment,
-  CreateInvestmentPayload,
-  UpdateInvestmentPayload,
-  ApiResponse,
-} from '@types/index';
-import { mockInvestments, simulateApiDelay } from '@services/mockData';
-import axiosInstance from '@utils/axios';
 
 /**
  * Get all investments for a portfolio
@@ -92,6 +88,7 @@ export const createInvestment = async (
     ...payload,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
+    currentPrice: 0,
   };
 
   return {

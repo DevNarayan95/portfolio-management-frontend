@@ -1,3 +1,4 @@
+// src/utils/axios.ts
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { API_BASE_URL, API_TIMEOUT } from '@constants/index';
 

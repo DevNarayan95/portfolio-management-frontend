@@ -1,15 +1,16 @@
+// src/components/features/InvestmentForm.tsx
+import React, { useState, useEffect } from 'react';
+import { Investment, CreateInvestmentPayload, InvestmentType } from '@types';
+import { Input, Select, Button, Card, Alert } from '@components/ui';
+import { useForm } from '@hooks/useForm';
+import { validateNumber } from '@utils/validation';
+import { INVESTMENT_TYPES } from '@constants/index';
+import { formatDateForInput } from '@utils/helpers';
+
 /**
  * Investment Form Component
  * Form for creating and updating investments
  */
-
-import React, { useState, useEffect } from 'react';
-import { Investment, CreateInvestmentPayload, InvestmentType } from '@types/index';
-import { Input, Select, Button, Card, Alert } from '@components/ui';
-import { useForm } from '@hooks/useForm';
-import { validateRequired, validateNumber } from '@utils/validation';
-import { INVESTMENT_TYPES } from '@constants/index';
-import { formatDateForInput } from '@utils/helpers';
 
 interface InvestmentFormProps {
   investment?: Investment;

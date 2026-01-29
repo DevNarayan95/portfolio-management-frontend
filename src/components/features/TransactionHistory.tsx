@@ -1,13 +1,14 @@
+// src/components/features/TransactionHistory.tsx
+import React, { useState } from 'react';
+import { Transaction, TransactionType } from '@types';
+import { Card, Badge } from '@components/ui';
+import { formatCurrency, formatDate } from '@utils/helpers';
+import { TRANSACTION_TYPES } from '@constants/index';
+
 /**
  * Transaction History Component
  * Displays transaction history with filtering
  */
-
-import React, { useState } from 'react';
-import { Transaction, TransactionType } from '@types/index';
-import { Card, Badge } from '@components/ui';
-import { formatCurrency, formatDate } from '@utils/helpers';
-import { TRANSACTION_TYPES } from '@constants/index';
 
 interface TransactionHistoryProps {
   transactions: Transaction[];

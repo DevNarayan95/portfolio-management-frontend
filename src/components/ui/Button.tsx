@@ -1,8 +1,4 @@
-/**
- * Button Component
- * Reusable button component with multiple variants
- */
-
+// src/components/ui/Button.tsx
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -32,7 +28,8 @@ export const Button: React.FC<ButtonProps> = ({
     success: 'bg-green-600 text-white hover:bg-green-700 focus:ring-green-500',
     danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
     warning: 'bg-amber-600 text-white hover:bg-amber-700 focus:ring-amber-500',
-    outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50 focus:ring-blue-500',
+    outline:
+      'border-2 border-current text-current hover:bg-current hover:bg-opacity-10 focus:ring-current',
   };
 
   const sizeStyles = {

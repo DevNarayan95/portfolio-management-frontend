@@ -1,18 +1,12 @@
+// src/store/authStore.ts
+import { create } from 'zustand';
+import { User, AuthTokens, LoginPayload, RegisterPayload } from '@types';
+import { loginUser, registerUser, logoutUser, getCurrentUser } from '@services/api/authApi';
+
 /**
  * Authentication Store (Zustand)
  * Manages authentication state globally
  */
-
-import { create } from 'zustand';
-import { User, AuthTokens } from '@types/index';
-import {
-  loginUser,
-  registerUser,
-  logoutUser,
-  getCurrentUser,
-  LoginPayload,
-  RegisterPayload,
-} from '@services/api/authApi';
 
 export interface AuthStore {
   // State
