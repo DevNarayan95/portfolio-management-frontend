@@ -54,7 +54,7 @@ export const getPortfolioSummary = async (
 /**
  * Get investment performance
  */
-export const getInvestmentPerformance = async (
+export const getInvestmentPerformanceDashboard = async (
   portfolioId: string
 ): Promise<ApiResponse<DashboardSummary>> => {
   try {

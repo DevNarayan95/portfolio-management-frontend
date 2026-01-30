@@ -11,6 +11,18 @@ export interface User {
   updatedAt: string;
 }
 
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
