@@ -1,6 +1,6 @@
 /**
  * Error Boundary Component
- * Catches React component errors and displays a fallback UI
+ * Catches and displays component errors
  */
 
 import React, { ReactNode } from 'react';
@@ -50,12 +50,12 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
               </button>
             </div>
 
-            {process.env.NODE_ENV === 'development' && (
+            {import.meta.env.NODE_ENV === 'development' && (
               <details className="mt-6 p-4 bg-gray-100 rounded border border-gray-300">
                 <summary className="cursor-pointer font-medium text-gray-900">
                   Error Details
                 </summary>
-                <pre className="mt-2 text-xs text-gray-600 overflow-auto">
+                <pre className="mt-2 text-xs text-gray-600 overflow-auto whitespace-pre-wrap">
                   {this.state.error?.stack}
                 </pre>
               </details>

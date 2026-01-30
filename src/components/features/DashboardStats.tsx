@@ -1,13 +1,12 @@
-// src/components/features/DashboardStats.tsx
-import React from 'react';
-import { DashboardSummary } from '@types';
-import { Card } from '@components/ui';
-import { formatCurrency, formatPercentage, getProfitColor } from '@utils/helpers';
-
 /**
  * Dashboard Stats Component
- * Displays key statistics on the dashboard
+ * Displays key portfolio statistics
  */
+
+import React from 'react';
+import { Card } from '@components/ui';
+import { DashboardSummary } from '@types';
+import { formatters, helpers } from '@utils';
 
 interface DashboardStatsProps {
   summary: DashboardSummary;
@@ -19,24 +18,28 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ summary }) => {
       label: 'Total Portfolios',
       value: summary.totalPortfolios.toString(),
       icon: '💼',
+      color: 'blue',
     },
     {
       label: 'Total Invested',
-      value: formatCurrency(summary.totalInvested),
+      value: formatters.currency(summary.totalInvestedAmount),
       icon: '💰',
+      color: 'green',
     },
     {
       label: 'Current Value',
-      value: formatCurrency(summary.totalValue),
+      value: formatters.currency(summary.totalCurrentValue),
       icon: '📈',
+      color: 'purple',
     },
     {
       label: 'Total Gain/Loss',
-      value: formatCurrency(summary.totalProfit),
-      valueColor: getProfitColor(summary.totalProfit),
+      value: formatters.currency(summary.totalGainLoss),
+      valueColor: helpers.getProfitColor(summary.totalGainLoss),
       icon: '🎯',
-      subValue: formatPercentage(summary.totalProfitPercentage),
-      subValueColor: getProfitColor(summary.totalProfit),
+      color: 'red',
+      subValue: formatters.percentage(summary.overallGainLossPercentage),
+      subValueColor: helpers.getProfitColor(summary.totalGainLoss),
     },
   ];
 
@@ -52,7 +55,7 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({ summary }) => {
               </p>
               {stat.subValue && (
                 <p className={`text-sm font-medium mt-1 ${stat.subValueColor}`}>
-                  {summary.totalProfit >= 0 ? '+' : ''}
+                  {summary.totalGainLoss >= 0 ? '+' : ''}
                   {stat.subValue}
                 </p>
               )}

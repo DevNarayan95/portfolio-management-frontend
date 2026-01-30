@@ -1,70 +1,190 @@
-// src/hooks/usePortfolio.ts
-import { usePortfolioStore } from '@store/portfolioStore';
-import { useCallback } from 'react';
-import { CreatePortfolioPayload, CreateInvestmentPayload, UpdateInvestmentPayload } from '@types';
-
 /**
  * Custom Hook for Portfolio Management
- * Provides easy access to portfolio store and operations
+ * Provides portfolio operations with toast integration
  */
+
+import { useCallback } from 'react';
+import { usePortfolioStore } from '@store';
+import { useToast } from './useToast';
+import {
+  CreatePortfolioRequest,
+  UpdatePortfolioRequest,
+  CreateInvestmentRequest,
+  UpdateInvestmentRequest,
+  CreateTransactionRequest,
+  FilterTransactionRequest,
+} from '@types';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES } from '@constants';
 
 export const usePortfolio = () => {
   const {
     portfolios,
     currentPortfolio,
     investments,
+    transactions,
     dashboardSummary,
     isLoading,
     error,
     fetchPortfolios,
     fetchPortfolioById,
-    createNewPortfolio,
-    updateCurrentPortfolio,
-    deleteCurrentPortfolio,
+    createPortfolio: storeCreatePortfolio,
+    updatePortfolio: storeUpdatePortfolio,
+    deletePortfolio: storeDeletePortfolio,
     fetchInvestments,
-    addInvestment,
-    updateCurrentInvestment,
-    removeInvestment,
+    createInvestment: storeCreateInvestment,
+    updateInvestment: storeUpdateInvestment,
+    deleteInvestment: storeDeleteInvestment,
+    fetchTransactions,
+    createTransaction: storeCreateTransaction,
     fetchDashboardSummary,
     clearError,
-    clearPortfolioData,
   } = usePortfolioStore();
 
-  // Wrap functions with useCallback to maintain reference
-  const memoizedFetchDashboard = useCallback(() => {
-    return fetchDashboardSummary();
-  }, []);
+  const { success, error: showError } = useToast();
 
-  const memoizedFetchPortfolios = useCallback(() => {
-    return fetchPortfolios();
-  }, []);
+  // Create portfolio with toast
+  const createPortfolio = useCallback(
+    async (payload: CreatePortfolioRequest) => {
+      const result = await storeCreatePortfolio(payload);
+      if (result) {
+        success(SUCCESS_MESSAGES.PORTFOLIO_CREATED);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.SERVER_ERROR);
+        return false;
+      }
+    },
+    [storeCreatePortfolio, success, showError, error]
+  );
 
-  const memoizedFetchPortfolioById = useCallback((id: string) => {
-    return fetchPortfolioById(id);
-  }, []);
+  // Update portfolio with toast
+  const updatePortfolio = useCallback(
+    async (id: string, payload: UpdatePortfolioRequest) => {
+      const result = await storeUpdatePortfolio(id, payload);
+      if (result) {
+        success(SUCCESS_MESSAGES.PORTFOLIO_UPDATED);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.SERVER_ERROR);
+        return false;
+      }
+    },
+    [storeUpdatePortfolio, success, showError, error]
+  );
 
-  const memoizedFetchInvestments = useCallback((portfolioId: string) => {
-    return fetchInvestments(portfolioId);
-  }, []);
+  // Delete portfolio with toast
+  const deletePortfolio = useCallback(
+    async (id: string) => {
+      const result = await storeDeletePortfolio(id);
+      if (result) {
+        success(SUCCESS_MESSAGES.PORTFOLIO_DELETED);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.SERVER_ERROR);
+        return false;
+      }
+    },
+    [storeDeletePortfolio, success, showError, error]
+  );
+
+  // Create investment with toast
+  const createInvestment = useCallback(
+    async (portfolioId: string, payload: CreateInvestmentRequest) => {
+      const result = await storeCreateInvestment(portfolioId, payload);
+      if (result) {
+        success(SUCCESS_MESSAGES.INVESTMENT_CREATED);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.SERVER_ERROR);
+        return false;
+      }
+    },
+    [storeCreateInvestment, success, showError, error]
+  );
+
+  // Update investment with toast
+  const updateInvestment = useCallback(
+    async (portfolioId: string, investmentId: string, payload: UpdateInvestmentRequest) => {
+      const result = await storeUpdateInvestment(portfolioId, investmentId, payload);
+      if (result) {
+        success(SUCCESS_MESSAGES.INVESTMENT_UPDATED);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.SERVER_ERROR);
+        return false;
+      }
+    },
+    [storeUpdateInvestment, success, showError, error]
+  );
+
+  // Delete investment with toast
+  const deleteInvestment = useCallback(
+    async (portfolioId: string, investmentId: string) => {
+      const result = await storeDeleteInvestment(portfolioId, investmentId);
+      if (result) {
+        success(SUCCESS_MESSAGES.INVESTMENT_DELETED);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.SERVER_ERROR);
+        return false;
+      }
+    },
+    [storeDeleteInvestment, success, showError, error]
+  );
+
+  // Create transaction with toast
+  const createTransaction = useCallback(
+    async (portfolioId: string, investmentId: string, payload: CreateTransactionRequest) => {
+      const result = await storeCreateTransaction(portfolioId, investmentId, payload);
+      if (result) {
+        success(SUCCESS_MESSAGES.TRANSACTION_CREATED);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.SERVER_ERROR);
+        return false;
+      }
+    },
+    [storeCreateTransaction, success, showError, error]
+  );
 
   return {
+    // State
     portfolios,
     currentPortfolio,
     investments,
+    transactions,
     dashboardSummary,
     isLoading,
     error,
-    fetchPortfolios: memoizedFetchPortfolios,
-    fetchPortfolioById: memoizedFetchPortfolioById,
-    createNewPortfolio,
-    updateCurrentPortfolio,
-    deleteCurrentPortfolio,
-    fetchInvestments: memoizedFetchInvestments,
-    addInvestment,
-    updateCurrentInvestment,
-    removeInvestment,
-    fetchDashboardSummary: memoizedFetchDashboard,
+
+    // Portfolio actions
+    fetchPortfolios: useCallback(fetchPortfolios, []),
+    fetchPortfolioById: useCallback((id: string) => fetchPortfolioById(id), [fetchPortfolioById]),
+    createPortfolio,
+    updatePortfolio,
+    deletePortfolio,
+
+    // Investment actions
+    fetchInvestments: useCallback(
+      (portfolioId: string) => fetchInvestments(portfolioId),
+      [fetchInvestments]
+    ),
+    createInvestment,
+    updateInvestment,
+    deleteInvestment,
+
+    // Transaction actions
+    fetchTransactions: useCallback(
+      (portfolioId: string, filters?: FilterTransactionRequest) =>
+        fetchTransactions(portfolioId, filters),
+      [fetchTransactions]
+    ),
+    createTransaction,
+
+    // Dashboard actions
+    fetchDashboardSummary: useCallback(fetchDashboardSummary, [fetchDashboardSummary]),
+
+    // Utility
     clearError,
-    clearPortfolioData,
   };
 };

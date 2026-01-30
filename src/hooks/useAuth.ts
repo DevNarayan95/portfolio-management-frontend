@@ -1,110 +1,85 @@
-// src/hooks/useAuth.ts
-import { useCallback } from 'react';
-import { useAuthStore } from '@store/authStore';
-import { LoginPayload, RegisterPayload } from '@types';
-
 /**
  * Custom Hook for Authentication
- * Provides easy access to auth store and common auth operations
+ * Provides authentication functionality with toast integration
  */
 
+import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '@store';
+import { useToast } from './useToast';
+import { LoginRequest, RegisterRequest } from '@types';
+import { SUCCESS_MESSAGES, ERROR_MESSAGES, ROUTES } from '@constants';
+
 export const useAuth = () => {
+  const navigate = useNavigate();
   const {
     user,
     tokens,
     isAuthenticated,
     isLoading,
     error,
-    register: authRegister,
-    login: authLogin,
-    logout: authLogout,
-    fetchCurrentUser,
+    register: storeRegister,
+    login: storeLogin,
+    logout: storeLogout,
+    getCurrentUser,
     clearError,
-    clearAuth,
-    setError,
   } = useAuthStore();
+  const { success, error: showError } = useToast();
 
-  /**
-   * Handle login with error handling
-   */
-  const login = useCallback(
-    async (payload: LoginPayload) => {
-      try {
-        clearError();
-        await authLogin(payload);
-        return { success: true };
-      } catch (error: any) {
-        const errorMessage = error?.message || 'Login failed';
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
-      }
-    },
-    [authLogin, clearError, setError]
-  );
-
-  /**
-   * Handle registration with error handling
-   */
+  // Register action with toast
   const register = useCallback(
-    async (payload: RegisterPayload) => {
-      try {
-        clearError();
-        await authRegister(payload);
-        return { success: true };
-      } catch (error: any) {
-        const errorMessage = error?.message || 'Registration failed';
-        setError(errorMessage);
-        return { success: false, error: errorMessage };
+    async (payload: RegisterRequest) => {
+      const result = await storeRegister(payload);
+      if (result) {
+        success(SUCCESS_MESSAGES.REGISTER);
+        navigate(ROUTES.LOGIN);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.REGISTER_FAILED);
+        return false;
       }
     },
-    [authRegister, clearError, setError]
+    [storeRegister, success, showError, navigate, error]
   );
 
-  /**
-   * Handle logout
-   */
-  const logout = useCallback(async () => {
-    try {
-      clearError();
-      await authLogout();
-      return { success: true };
-    } catch (error: any) {
-      console.error('Logout error:', error);
-      // Still clear auth even if logout fails
-      return { success: true };
-    }
-  }, [authLogout, clearError]);
+  // Login action with toast
+  const login = useCallback(
+    async (payload: LoginRequest) => {
+      const result = await storeLogin(payload);
+      if (result) {
+        success(SUCCESS_MESSAGES.LOGIN);
+        navigate(ROUTES.DASHBOARD);
+        return true;
+      } else {
+        showError(error || ERROR_MESSAGES.LOGIN_FAILED);
+        return false;
+      }
+    },
+    [storeLogin, success, showError, navigate, error]
+  );
 
-  /**
-   * Refresh user profile
-   */
+  // Logout action with toast
+  const logout = useCallback(async () => {
+    await storeLogout();
+    success(SUCCESS_MESSAGES.LOGOUT);
+    navigate(ROUTES.LOGIN);
+  }, [storeLogout, success, navigate]);
+
+  // Refresh user action
   const refreshUser = useCallback(async () => {
-    try {
-      clearError();
-      await fetchCurrentUser();
-      return { success: true };
-    } catch (error: any) {
-      const errorMessage = error?.message || 'Failed to refresh user';
-      setError(errorMessage);
-      return { success: false, error: errorMessage };
-    }
-  }, [fetchCurrentUser, clearError, setError]);
+    await getCurrentUser();
+  }, [getCurrentUser]);
 
   return {
-    // State
     user,
     tokens,
     isAuthenticated,
     isLoading,
     error,
-
-    // Methods
-    login,
     register,
+    login,
     logout,
     refreshUser,
-    fetchCurrentUser,
     clearError,
-    clearAuth,
   };
 };

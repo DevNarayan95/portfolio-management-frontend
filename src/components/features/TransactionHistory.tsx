@@ -1,14 +1,13 @@
-// src/components/features/TransactionHistory.tsx
-import React, { useState } from 'react';
-import { Transaction, TransactionType } from '@types';
-import { Card, Badge } from '@components/ui';
-import { formatCurrency, formatDate } from '@utils/helpers';
-import { TRANSACTION_TYPES } from '@constants/index';
-
 /**
  * Transaction History Component
  * Displays transaction history with filtering
  */
+
+import React, { useState } from 'react';
+import { Card, Badge, Button } from '@components/ui';
+import { Transaction, TransactionType } from '@types';
+import { formatters } from '@utils';
+import { TRANSACTION_TYPES } from '@constants';
 
 interface TransactionHistoryProps {
   transactions: Transaction[];
@@ -38,36 +37,16 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
 
         {/* Filter Buttons */}
         <div className="flex gap-2">
-          <button
-            onClick={() => setFilter('ALL')}
-            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-              filter === 'ALL'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilter(TransactionType.BUY)}
-            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-              filter === TransactionType.BUY
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Buy
-          </button>
-          <button
-            onClick={() => setFilter(TransactionType.SELL)}
-            className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-              filter === TransactionType.SELL
-                ? 'bg-red-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Sell
-          </button>
+          {(['ALL', TransactionType.BUY, TransactionType.SELL] as const).map((type) => (
+            <Button
+              key={type}
+              variant={filter === type ? 'primary' : 'secondary'}
+              size="sm"
+              onClick={() => setFilter(type)}
+            >
+              {type === 'ALL' ? 'All' : TRANSACTION_TYPES[type]}
+            </Button>
+          ))}
         </div>
       </div>
 
@@ -90,16 +69,18 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                 key={txn.id}
                 className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
               >
-                <td className="px-4 py-3">{formatDate(txn.transactionDate)}</td>
+                <td className="px-4 py-3">{formatters.date(txn.transactionDate)}</td>
                 <td className="px-4 py-3">
                   <Badge variant={txn.type === TransactionType.BUY ? 'success' : 'danger'}>
                     {TRANSACTION_TYPES[txn.type]}
                   </Badge>
                 </td>
                 <td className="text-right px-4 py-3 font-medium">{txn.quantity}</td>
-                <td className="text-right px-4 py-3 font-medium">{formatCurrency(txn.price)}</td>
+                <td className="text-right px-4 py-3 font-medium">
+                  {formatters.currency(txn.price)}
+                </td>
                 <td className="text-right px-4 py-3 font-semibold text-gray-900">
-                  {formatCurrency(txn.amount)}
+                  {formatters.currency(txn.amount)}
                 </td>
                 <td className="px-4 py-3 text-gray-600">{txn.notes || '-'}</td>
               </tr>

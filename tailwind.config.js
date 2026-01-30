@@ -1,4 +1,7 @@
-/** @type {import('tailwindcss').Config} */
+/**
+ * Tailwind CSS Configuration
+ */
+
 export default {
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
@@ -15,91 +18,16 @@ export default {
           700: '#1d4ed8',
           800: '#1e40af',
           900: '#1e3a8a',
-          950: '#172554',
         },
-        secondary: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
-        },
-        success: '#059669',
-        danger: '#dc2626',
-        warning: '#f59e0b',
-        info: '#0ea5e9',
-        light: '#f8fafc',
-        dark: '#1e293b',
-      },
-      fontFamily: {
-        sans: ['Segoe UI', 'Tahoma', 'Geneva', 'Verdana', 'sans-serif'],
-        mono: ['Fira Code', 'monospace'],
-      },
-      fontSize: {
-        xs: ['0.75rem', { lineHeight: '1rem' }],
-        sm: ['0.875rem', { lineHeight: '1.25rem' }],
-        base: ['1rem', { lineHeight: '1.5rem' }],
-        lg: ['1.125rem', { lineHeight: '1.75rem' }],
-        xl: ['1.25rem', { lineHeight: '1.75rem' }],
-        '2xl': ['1.5rem', { lineHeight: '2rem' }],
-        '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
-        '4xl': ['2.25rem', { lineHeight: '2.5rem' }],
-      },
-      boxShadow: {
-        card: '0 4px 15px rgba(0, 0, 0, 0.08)',
-        hover: '0 8px 20px rgba(0, 0, 0, 0.1)',
-        lg: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-        xl: '0 25px 50px -12px rgba(0, 0, 0, 0.15)',
-      },
-      spacing: {
-        xs: '0.5rem',
-        sm: '1rem',
-        md: '1.5rem',
-        lg: '2rem',
-        xl: '2.5rem',
-        '2xl': '3rem',
-      },
-      borderRadius: {
-        xs: '0.25rem',
-        sm: '0.375rem',
-        md: '0.5rem',
-        lg: '0.75rem',
-        xl: '1rem',
       },
       animation: {
-        'fade-in': 'fadeIn 0.3s ease-in',
-        'slide-in': 'slideIn 0.3s ease-in',
+        'spin-slow': 'spin 2s linear infinite',
+        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
-      keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' },
-        },
-        slideIn: {
-          '0%': { transform: 'translateX(-10px)', opacity: '0' },
-          '100%': { transform: 'translateX(0)', opacity: '1' },
-        },
-      },
-      transitionDuration: {
-        250: '250ms',
-        350: '350ms',
+      fontFamily: {
+        sans: ['Inter', 'system-ui', 'sans-serif'],
       },
     },
   },
   plugins: [],
-  safelist: [
-    // Add any dynamic classes that might be generated at runtime
-    'bg-green-50',
-    'bg-red-50',
-    'bg-yellow-50',
-    'text-green-600',
-    'text-red-600',
-    'text-yellow-600',
-  ],
 };

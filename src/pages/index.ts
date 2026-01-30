@@ -1,11 +1,9 @@
 /**
- * Central Pages Export
+ * Central export for all pages
  */
 
-export * from './HomePage';
-export * from './LoginPage';
-export * from './RegisterPage';
-export * from './DashboardPage';
-export * from './PortfolioListPage';
-export * from './PortfolioDetailPage';
-export * from './NotFoundPage';
+export * from './auth';
+export * from './dashboard';
+export * from './portfolio';
+export * from './profile';
+export * from './common';

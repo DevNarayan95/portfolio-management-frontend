@@ -1,0 +1,8 @@
+/**
+ * Tailwind CSS Configuration
+ * Main entry point for Tailwind
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,25 +1,25 @@
-// src/components/features/InvestmentList.tsx
-import React from 'react';
-import { Investment } from '@types';
-import { Card, Badge } from '@components/ui';
-import { formatCurrency, formatPercentage, getProfitColor, calculateProfit } from '@utils/helpers';
-import { INVESTMENT_TYPES } from '@constants/index';
-
 /**
  * Investment List Component
- * Displays list of investments in a portfolio
+ * Displays list of investments with performance
  */
+
+import React from 'react';
+import { Card, Badge, Button } from '@components/ui';
+import { Investment } from '@types';
+import { formatters, helpers } from '@utils';
 
 interface InvestmentListProps {
   investments: Investment[];
   onEdit?: (investment: Investment) => void;
   onDelete?: (investment: Investment) => void;
+  isLoading?: boolean;
 }
 
 export const InvestmentList: React.FC<InvestmentListProps> = ({
   investments,
   onEdit,
   onDelete,
+  isLoading = false,
 }) => {
   if (investments.length === 0) {
     return (
@@ -34,13 +34,15 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
   return (
     <div className="space-y-4">
       {investments.map((investment) => {
-        const { profit, profitPercentage } = calculateProfit(
+        const { profit, profitPercentage } = helpers.calculateProfit(
           investment.currentPrice,
           investment.purchasePrice,
           investment.quantity
         );
         const totalValue = investment.currentPrice * investment.quantity;
-        const totalInvested = investment.purchasePrice * investment.quantity;
+        // const totalInvested = investment.purchasePrice * investment.quantity;
+        const textColor = helpers.getProfitColor(profit);
+        const bgColor = helpers.getProfitBgColor(profit);
 
         return (
           <Card key={investment.id} hover className="p-4">
@@ -48,9 +50,7 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
                   <h3 className="font-semibold text-gray-900">{investment.name}</h3>
-                  <Badge variant="secondary">
-                    {INVESTMENT_TYPES[investment.type as keyof typeof INVESTMENT_TYPES]}
-                  </Badge>
+                  <Badge variant="secondary">{formatters.investmentType(investment.type)}</Badge>
                   {investment.isSIP && <Badge variant="success">SIP</Badge>}
                 </div>
 
@@ -71,7 +71,7 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
                   <div>
                     <p className="text-xs text-gray-600">Current Price</p>
                     <p className="font-semibold text-gray-900">
-                      {formatCurrency(investment.currentPrice)}
+                      {formatters.currency(investment.currentPrice)}
                     </p>
                   </div>
 
@@ -79,7 +79,7 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
                   <div>
                     <p className="text-xs text-gray-600">Purchase Price</p>
                     <p className="font-semibold text-gray-900">
-                      {formatCurrency(investment.purchasePrice)}
+                      {formatters.currency(investment.purchasePrice)}
                     </p>
                   </div>
                 </div>
@@ -92,36 +92,42 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
               <div className="text-right min-w-fit ml-4">
                 <p className="text-xs text-gray-600 mb-1">Current Value</p>
                 <p className="text-lg font-semibold text-gray-900 mb-3">
-                  {formatCurrency(totalValue)}
+                  {formatters.currency(totalValue)}
                 </p>
 
-                <div
-                  className={`text-right p-2 rounded ${getProfitColor(profit) === 'text-success' ? 'bg-green-50' : 'bg-red-50'}`}
-                >
-                  <p className={`font-semibold ${getProfitColor(profit)}`}>
+                <div className={`text-right p-2 rounded ${bgColor}`}>
+                  <p className={`font-semibold ${textColor}`}>
                     {profit >= 0 ? '+' : ''}
-                    {formatCurrency(profit)}
+                    {formatters.currency(profit)}
                   </p>
-                  <p className={`text-sm ${getProfitColor(profit)}`}>
+                  <p className={`text-sm ${textColor}`}>
                     {profit >= 0 ? '+' : ''}
-                    {formatPercentage(profitPercentage)}
+                    {formatters.percentage(profitPercentage)}
                   </p>
                 </div>
 
-                {onEdit && onDelete && (
-                  <div className="flex gap-2 mt-3">
-                    <button
-                      onClick={() => onEdit(investment)}
-                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => onDelete(investment)}
-                      className="text-red-600 hover:text-red-700 text-sm font-medium"
-                    >
-                      Delete
-                    </button>
+                {(onEdit || onDelete) && (
+                  <div className="flex gap-2 mt-3 justify-end">
+                    {onEdit && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onEdit(investment)}
+                        disabled={isLoading}
+                      >
+                        Edit
+                      </Button>
+                    )}
+                    {onDelete && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => onDelete(investment)}
+                        disabled={isLoading}
+                      >
+                        Delete
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>

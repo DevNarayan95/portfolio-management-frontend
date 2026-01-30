@@ -1,10 +1,9 @@
-//src/components/ui/Select.tsx
-import React from 'react';
-
 /**
  * Select Component
- * Reusable select/dropdown component
+ * Reusable dropdown select input
  */
+
+import React from 'react';
 
 interface Option {
   value: string | number;
@@ -17,6 +16,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: string;
   helperText?: string;
   fullWidth?: boolean;
+  placeholder?: string;
 }
 
 export const Select: React.FC<SelectProps> = ({
@@ -25,6 +25,7 @@ export const Select: React.FC<SelectProps> = ({
   error,
   helperText,
   fullWidth = false,
+  placeholder = 'Select an option',
   className = '',
   id,
   ...props
@@ -37,7 +38,7 @@ export const Select: React.FC<SelectProps> = ({
       {label && (
         <label htmlFor={selectId} className="block text-sm font-medium text-gray-700 mb-2">
           {label}
-          {props.required && <span className="text-red-500">*</span>}
+          {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
 
@@ -49,11 +50,12 @@ export const Select: React.FC<SelectProps> = ({
           transition-colors duration-200
           bg-white
           ${hasError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'}
+          ${props.disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
           ${className}
         `}
         {...props}
       >
-        <option value="">Select an option</option>
+        <option value="">{placeholder}</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

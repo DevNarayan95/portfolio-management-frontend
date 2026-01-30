@@ -1,12 +1,11 @@
-//src/components/ui/Tabs.tsx
-import React, { useState } from 'react';
-
 /**
  * Tabs Component
- * Reusable tabbed interface component
+ * Tabbed interface
  */
 
-interface Tab {
+import React, { useState } from 'react';
+
+export interface Tab {
   id: string;
   label: string;
   content: React.ReactNode;
@@ -40,11 +39,11 @@ export const Tabs: React.FC<TabsProps> = ({ tabs, defaultTab, onChange }) => {
               onClick={() => handleTabChange(tab.id)}
               disabled={tab.disabled}
               className={`
-                px-4 py-3 font-medium transition-colors
+                px-4 py-3 font-medium transition-colors border-b-2
                 ${
                   activeTab === tab.id
-                    ? 'border-b-2 border-blue-600 text-blue-600'
-                    : 'text-gray-600 hover:text-gray-900'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-600 hover:text-gray-900'
                 }
                 ${tab.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
               `}

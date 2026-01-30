@@ -1,3 +1,8 @@
-// src/components/layout/index.ts
-export * from './MainLayout';
-export * from './AuthLayout';
+/**
+ * Central export for all layout components
+ */
+
+export { Header } from './Header';
+export { Footer } from './Footer';
+export { MainLayout } from './MainLayout';
+export { AuthLayout } from './AuthLayout';
