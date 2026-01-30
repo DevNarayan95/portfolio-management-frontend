@@ -28,6 +28,9 @@ export default defineConfig(({ mode }) => {
       port: 3001,
       host: '0.0.0.0',
       open: false,
+      watch: {
+        usePolling: true, // Important for Docker file watching
+      },
       proxy: {
         '/api': {
           target: env.VITE_API_BASE_URL || 'http://localhost:3000',
@@ -36,6 +39,10 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api/, ''),
         },
       },
+    },
+    preview: {
+      host: '0.0.0.0',
+      port: 3001,
     },
     build: {
       outDir: 'dist',

@@ -1,7 +1,7 @@
 // src/store/authStore.ts
 import { create } from 'zustand';
 import { User, AuthTokens, LoginPayload, RegisterPayload } from '@types';
-import { loginUser, registerUser, logoutUser, getCurrentUser } from '@services/api/authApi';
+import { loginUser, registerUser, logoutUser, getCurrentUser } from '@services/authApi';
 
 /**
  * Authentication Store (Zustand)

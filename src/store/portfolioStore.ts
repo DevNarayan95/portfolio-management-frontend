@@ -14,14 +14,14 @@ import {
   createPortfolio,
   updatePortfolio,
   deletePortfolio,
-} from '@services/api/portfolioApi';
+} from '@services/portfolioApi';
 import {
   getInvestmentsByPortfolio,
   createInvestment,
   updateInvestment,
   deleteInvestment,
-} from '@services/api/investmentApi';
-import { getDashboardSummary } from '@services/api/dashboardApi';
+} from '@services/investmentApi';
+import { getDashboardSummary } from '@services/dashboardApi';
 
 /**
  * Portfolio Store (Zustand)
