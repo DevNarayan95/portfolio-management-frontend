@@ -1,79 +1,16 @@
 // src/services/api/transactionApi.ts
-import { Transaction, CreateTransactionPayload, ApiResponse, PaginatedResponse } from '@types';
-import { mockTransactions, simulateApiDelay } from '@services/mockData';
+import {
+  Transaction,
+  CreateTransactionPayload,
+  ApiResponse,
+  FilterTransactionPayload,
+} from '@types';
 import axiosInstance from '@utils/axios';
 
 /**
  * Transaction API Service
  * This service handles all transaction-related API calls
  */
-
-/**
- * Get transactions for a portfolio with pagination
- */
-export const getTransactionsByPortfolio = async (
-  portfolioId: string,
-  page: number = 1,
-  limit: number = 10
-): Promise<ApiResponse<PaginatedResponse<Transaction>>> => {
-  // Simulate API call
-  await simulateApiDelay();
-
-  // TODO: Replace with actual API call
-  // const response = await axiosInstance.get(`/portfolios/${portfolioId}/transactions`, {
-  //   params: { page, limit }
-  // })
-  // return response.data
-
-  const transactions = mockTransactions;
-  const total = transactions.length;
-  const totalPages = Math.ceil(total / limit);
-  const startIndex = (page - 1) * limit;
-  const paginatedData = transactions.slice(startIndex, startIndex + limit);
-
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'Transactions fetched successfully',
-    data: {
-      data: paginatedData,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages,
-      },
-    },
-    timestamp: new Date().toISOString(),
-  };
-};
-
-/**
- * Get transactions for an investment
- */
-export const getTransactionsByInvestment = async (
-  portfolioId: string,
-  investmentId: string
-): Promise<ApiResponse<Transaction[]>> => {
-  // Simulate API call
-  await simulateApiDelay();
-
-  // TODO: Replace with actual API call
-  // const response = await axiosInstance.get(
-  //   `/portfolios/${portfolioId}/investments/${investmentId}/transactions`
-  // )
-  // return response.data
-
-  const transactions = mockTransactions.filter((txn) => txn.investmentId === investmentId);
-
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'Transactions fetched successfully',
-    data: transactions,
-    timestamp: new Date().toISOString(),
-  };
-};
 
 /**
  * Create transaction
@@ -83,32 +20,91 @@ export const createTransaction = async (
   investmentId: string,
   payload: CreateTransactionPayload
 ): Promise<ApiResponse<Transaction>> => {
-  // Simulate API call
-  await simulateApiDelay();
+  try {
+    const response = await axiosInstance.post(
+      `/portfolios/${portfolioId}/investments/${investmentId}/transactions`,
+      payload
+    );
 
-  // TODO: Replace with actual API call
-  // const response = await axiosInstance.post(
-  //   `/portfolios/${portfolioId}/investments/${investmentId}/transactions`,
-  //   payload
-  // )
-  // return response.data
+    return {
+      success: true,
+      statusCode: 201,
+      message: 'Transaction created successfully',
+      data: response.data,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || 'Failed to create transaction';
+    throw { success: false, statusCode: error.response?.status || 500, message };
+  }
+};
 
-  const newTransaction: Transaction = {
-    id: 'txn-' + Date.now(),
-    investmentId,
-    ...payload,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    amount: 0,
-  };
+/**
+ * Get transactions by portfolio
+ */
+export const getPortfolioTransactions = async (
+  portfolioId: string,
+  filters?: FilterTransactionPayload
+): Promise<ApiResponse<Transaction[]>> => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.type) params.append('type', filters.type);
+    if (filters?.fromDate) params.append('fromDate', filters.fromDate);
+    if (filters?.toDate) params.append('toDate', filters.toDate);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
 
-  return {
-    success: true,
-    statusCode: 201,
-    message: 'Transaction created successfully',
-    data: newTransaction,
-    timestamp: new Date().toISOString(),
-  };
+    const response = await axiosInstance.get(
+      `/portfolios/${portfolioId}/transactions?${params.toString()}`
+    );
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'Transactions fetched successfully',
+      data: response.data,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || 'Failed to fetch transactions';
+    throw { success: false, statusCode: error.response?.status || 500, message };
+  }
+};
+
+/**
+ * Get transactions by investment
+ */
+export const getInvestmentTransactions = async (
+  portfolioId: string,
+  investmentId: string,
+  filters?: FilterTransactionPayload
+): Promise<ApiResponse<Transaction[]>> => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.type) params.append('type', filters.type);
+    if (filters?.fromDate) params.append('fromDate', filters.fromDate);
+    if (filters?.toDate) params.append('toDate', filters.toDate);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.limit) params.append('limit', filters.limit.toString());
+
+    const response = await axiosInstance.get(
+      `/portfolios/${portfolioId}/investments/${investmentId}/transactions?${params.toString()}`
+    );
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'Transactions fetched successfully',
+      data: response.data,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || 'Failed to fetch transactions';
+    throw { success: false, statusCode: error.response?.status || 500, message };
+  }
 };
 
 /**
@@ -116,34 +112,43 @@ export const createTransaction = async (
  */
 export const getTransactionById = async (
   portfolioId: string,
-  investmentId: string,
   transactionId: string
 ): Promise<ApiResponse<Transaction>> => {
-  // Simulate API call
-  await simulateApiDelay();
+  try {
+    const response = await axiosInstance.get(
+      `/portfolios/${portfolioId}/transactions/${transactionId}`
+    );
 
-  // TODO: Replace with actual API call
-  // const response = await axiosInstance.get(
-  //   `/portfolios/${portfolioId}/investments/${investmentId}/transactions/${transactionId}`
-  // )
-  // return response.data
-
-  const transaction = mockTransactions.find((txn) => txn.id === transactionId);
-
-  if (!transaction) {
     return {
-      success: false,
-      statusCode: 404,
-      message: 'Transaction not found',
+      success: true,
+      statusCode: 200,
+      message: 'Transaction fetched successfully',
+      data: response.data,
       timestamp: new Date().toISOString(),
     };
+  } catch (error: any) {
+    const message = error.response?.data?.message || error.message || 'Failed to fetch transaction';
+    throw { success: false, statusCode: error.response?.status || 500, message };
   }
+};
 
-  return {
-    success: true,
-    statusCode: 200,
-    message: 'Transaction fetched successfully',
-    data: transaction,
-    timestamp: new Date().toISOString(),
-  };
+/**
+ * Get transactions analytics
+ */
+export const getTransactionsAnalytics = async (portfolioId: string): Promise<ApiResponse<any>> => {
+  try {
+    const response = await axiosInstance.get(`/portfolios/${portfolioId}/transactions/analytics`);
+
+    return {
+      success: true,
+      statusCode: 200,
+      message: 'Transaction analytics fetched successfully',
+      data: response.data,
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message || error.message || 'Failed to fetch transaction analytics';
+    throw { success: false, statusCode: error.response?.status || 500, message };
+  }
 };

@@ -124,8 +124,17 @@ export interface CreateTransactionPayload {
   type: TransactionType;
   quantity: number;
   price: number;
+  amount: number;
   transactionDate: string;
   notes?: string;
+}
+
+export interface FilterTransactionPayload {
+  type?: TransactionType;
+  fromDate?: string;
+  toDate?: string;
+  page?: number;
+  limit?: number;
 }
 
 // Dashboard Types
