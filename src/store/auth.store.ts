@@ -1,6 +1,5 @@
 /**
- * Authentication Store (Zustand)
- * Global state management for authentication
+ * Authentication Store (ZUSTAND) - ENSURE STATE IS SET BEFORE RETURNING
  */
 
 import { create } from 'zustand';
@@ -33,33 +32,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
   isLoading: false,
   error: null,
 
-  // Register Action
-  register: async (payload: RegisterRequest) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await authApi.register(payload);
-
-      if (!response.success) {
-        set({ isLoading: false, error: response.message });
-        return false;
-      }
-
-      // Save tokens
-      const { user, tokens } = response.data!;
-      localStorage.setItem('auth_token', tokens.accessToken);
-      localStorage.setItem('refresh_token', tokens.refreshToken);
-      localStorage.setItem('user', JSON.stringify(user));
-
-      set({ isLoading: false });
-      return true;
-    } catch (error: any) {
-      const errorMessage = error.message || 'Registration failed';
-      set({ isLoading: false, error: errorMessage });
-      return false;
-    }
-  },
-
-  // Login Action
+  // Login Action - MOST IMPORTANT FIX
   login: async (payload: LoginRequest) => {
     set({ isLoading: true, error: null });
     try {
@@ -70,12 +43,29 @@ export const useAuthStore = create<AuthStore>((set) => ({
         return false;
       }
 
-      // Save tokens and user
-      const { user, tokens } = response.data!;
+      if (!response.data) {
+        set({ isLoading: false, error: 'No data in response' });
+        return false;
+      }
+
+      const { user, tokens } = response.data;
+
+      if (!user) {
+        set({ isLoading: false, error: 'No user in response' });
+        return false;
+      }
+
+      if (!tokens) {
+        set({ isLoading: false, error: 'No tokens in response' });
+        return false;
+      }
+
+      // Save to localStorage
       localStorage.setItem('auth_token', tokens.accessToken);
       localStorage.setItem('refresh_token', tokens.refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
 
+      // SET STATE - THIS IS THE KEY
       set({
         user,
         tokens,
@@ -92,13 +82,38 @@ export const useAuthStore = create<AuthStore>((set) => ({
     }
   },
 
+  // Register Action
+  register: async (payload: RegisterRequest) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await authApi.register(payload);
+
+      if (!response.success || !response.data) {
+        set({ isLoading: false, error: response.message });
+        return false;
+      }
+
+      const { user, tokens } = response.data;
+
+      // Save to localStorage
+      localStorage.setItem('auth_token', tokens.accessToken);
+      localStorage.setItem('refresh_token', tokens.refreshToken);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      set({ isLoading: false });
+      return true;
+    } catch (error: any) {
+      const errorMessage = error.message || 'Registration failed';
+      set({ isLoading: false, error: errorMessage });
+      return false;
+    }
+  },
+
   // Logout Action
   logout: async () => {
     set({ isLoading: true });
     try {
       await authApi.logout();
-
-      // Clear storage
       localStorage.removeItem('auth_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
@@ -111,7 +126,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
         error: null,
       });
     } catch (error) {
-      // Clear storage anyway
       localStorage.removeItem('auth_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');
@@ -131,9 +145,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
     try {
       const token = localStorage.getItem('auth_token');
       const refreshToken = localStorage.getItem('refresh_token');
-      localStorage.getItem('user');
 
-      // If no tokens, not authenticated
       if (!token || !refreshToken) {
         set({
           isAuthenticated: false,
@@ -143,7 +155,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
         return;
       }
 
-      // Try to get current user
       const response = await authApi.getCurrentUser();
 
       if (response.success && response.data) {
@@ -154,7 +165,6 @@ export const useAuthStore = create<AuthStore>((set) => ({
           isLoading: false,
         });
       } else {
-        // Clear invalid tokens
         localStorage.removeItem('auth_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
@@ -166,7 +176,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
         });
       }
     } catch (error) {
-      // Clear tokens on error
+      console.error('Initialize auth error:', error);
       localStorage.removeItem('auth_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('user');

@@ -4,21 +4,14 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle?: string;
-  footerLink?: { text: string; url: string };
 }
 
-export const AuthLayout: React.FC<AuthLayoutProps> = ({
-  children,
-  title,
-  subtitle,
-  footerLink,
-}) => {
+export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
@@ -31,16 +24,6 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
 
         {/* Content */}
         {children}
-
-        {/* Footer Link */}
-        {footerLink && (
-          <p className="text-center text-sm text-gray-600 mt-6">
-            {footerLink.text}{' '}
-            <Link to={footerLink.url} className="text-blue-600 hover:text-blue-700 font-medium">
-              here
-            </Link>
-          </p>
-        )}
 
         {/* Copyright */}
         <div className="mt-8 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">

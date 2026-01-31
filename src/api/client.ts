@@ -35,6 +35,12 @@ axiosClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+    if (originalRequest.url?.includes('/auth/refresh-token')) {
+      localStorage.clear();
+      window.location.href = '/auth/login';
+      return Promise.reject(error);
+    }
+
     // Handle 401 Unauthorized
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
@@ -60,7 +66,13 @@ axiosClient.interceptors.response.use(
           }
         );
 
-        const { accessToken, refreshToken: newRefreshToken } = response.data;
+        const responseData = response.data.data || response.data;
+        const accessToken = responseData.accessToken || responseData.access_token;
+        const newRefreshToken = responseData.refreshToken || responseData.refresh_token;
+
+        if (!accessToken) {
+          throw new Error('Access token not received from server');
+        }
 
         // Update tokens
         localStorage.setItem('auth_token', accessToken);

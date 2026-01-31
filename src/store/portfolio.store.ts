@@ -1,11 +1,12 @@
 /**
  * Portfolio Store (Zustand)
  * Global state management for portfolios
+ * Fixed version with proper error handling and type safety
  */
 
 import { create } from 'zustand';
 import { Portfolio, Investment, DashboardSummary, Transaction } from '@types';
-import { portfolioApi, investmentApi, transactionApi, dashboardApi } from '@api';
+import { portfolioApi, investmentApi, transactionApi } from '@api';
 import {
   CreatePortfolioRequest,
   UpdatePortfolioRequest,
@@ -70,39 +71,45 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
 
   // ============ PORTFOLIO ACTIONS ============
 
-  // Fetch all portfolios
+  /**
+   * Fetch all portfolios
+   */
   fetchPortfolios: async () => {
     set({ isLoading: true, error: null });
     try {
       const response = await portfolioApi.getPortfolios();
 
-      if (response.success) {
-        set({ portfolios: response.data || [], isLoading: false });
+      if (response.success && response.data) {
+        set({ portfolios: response.data, isLoading: false });
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to fetch portfolios' });
       }
     } catch (error: any) {
       set({ isLoading: false, error: error.message || 'Failed to fetch portfolios' });
     }
   },
 
-  // Fetch portfolio by ID
+  /**
+   * Fetch portfolio by ID
+   */
   fetchPortfolioById: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
       const response = await portfolioApi.getPortfolioById(id);
 
-      if (response.success) {
-        set({ currentPortfolio: response.data || null, isLoading: false });
+      if (response.success && response.data) {
+        set({ currentPortfolio: response.data, isLoading: false });
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to fetch portfolio' });
       }
     } catch (error: any) {
       set({ isLoading: false, error: error.message || 'Failed to fetch portfolio' });
     }
   },
 
-  // Create portfolio
+  /**
+   * Create new portfolio
+   */
   createPortfolio: async (payload: CreatePortfolioRequest) => {
     set({ isLoading: true, error: null });
     try {
@@ -116,7 +123,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         });
         return true;
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to create portfolio' });
         return false;
       }
     } catch (error: any) {
@@ -126,7 +133,9 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     }
   },
 
-  // Update portfolio
+  /**
+   * Update existing portfolio
+   */
   updatePortfolio: async (id: string, payload: UpdatePortfolioRequest) => {
     set({ isLoading: true, error: null });
     try {
@@ -141,7 +150,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         });
         return true;
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to update portfolio' });
         return false;
       }
     } catch (error: any) {
@@ -151,7 +160,9 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     }
   },
 
-  // Delete portfolio
+  /**
+   * Delete portfolio by ID
+   */
   deletePortfolio: async (id: string) => {
     set({ isLoading: true, error: null });
     try {
@@ -167,7 +178,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         });
         return true;
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to delete portfolio' });
         return false;
       }
     } catch (error: any) {
@@ -179,23 +190,28 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
 
   // ============ INVESTMENT ACTIONS ============
 
-  // Fetch investments
+  /**
+   * Fetch investments for a portfolio
+   */
   fetchInvestments: async (portfolioId: string) => {
     set({ isLoading: true, error: null });
     try {
       const response = await investmentApi.getInvestments(portfolioId);
 
-      if (response.success) {
-        set({ investments: response.data || [], isLoading: false });
+      if (response.success && response.data) {
+        const investmentsData = Array.isArray(response.data) ? response.data : [];
+        set({ investments: investmentsData, isLoading: false });
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to fetch investments' });
       }
     } catch (error: any) {
       set({ isLoading: false, error: error.message || 'Failed to fetch investments' });
     }
   },
 
-  // Create investment
+  /**
+   * Create new investment
+   */
   createInvestment: async (portfolioId: string, payload: CreateInvestmentRequest) => {
     set({ isLoading: true, error: null });
     try {
@@ -209,7 +225,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         });
         return true;
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to create investment' });
         return false;
       }
     } catch (error: any) {
@@ -219,7 +235,9 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     }
   },
 
-  // Update investment
+  /**
+   * Update existing investment
+   */
   updateInvestment: async (
     portfolioId: string,
     investmentId: string,
@@ -239,7 +257,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         });
         return true;
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to update investment' });
         return false;
       }
     } catch (error: any) {
@@ -249,7 +267,9 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     }
   },
 
-  // Delete investment
+  /**
+   * Delete investment by ID
+   */
   deleteInvestment: async (portfolioId: string, investmentId: string) => {
     set({ isLoading: true, error: null });
     try {
@@ -263,7 +283,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         });
         return true;
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to delete investment' });
         return false;
       }
     } catch (error: any) {
@@ -275,23 +295,30 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
 
   // ============ TRANSACTION ACTIONS ============
 
-  // Fetch transactions
+  /**
+   * Fetch transactions for a portfolio with optional filters
+   */
   fetchTransactions: async (portfolioId: string, filters?: FilterTransactionRequest) => {
     set({ isLoading: true, error: null });
     try {
       const response = await transactionApi.getTransactionsByPortfolio(portfolioId, filters);
 
       if (response.success && response.data) {
-        set({ transactions: response.data.data || [], isLoading: false });
+        const transactionsData = Array.isArray(response.data)
+          ? response.data
+          : response.data.data || [];
+        set({ transactions: transactionsData, isLoading: false });
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to fetch transactions' });
       }
     } catch (error: any) {
       set({ isLoading: false, error: error.message || 'Failed to fetch transactions' });
     }
   },
 
-  // Create transaction
+  /**
+   * Create new transaction
+   */
   createTransaction: async (
     portfolioId: string,
     investmentId: string,
@@ -309,7 +336,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         });
         return true;
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'Failed to create transaction' });
         return false;
       }
     } catch (error: any) {
@@ -321,30 +348,74 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
 
   // ============ DASHBOARD ACTIONS ============
 
-  // Fetch dashboard summary
+  /**
+   * Fetch dashboard summary
+   * Transforms portfolio data into dashboard summary format
+   */
   fetchDashboardSummary: async () => {
     set({ isLoading: true, error: null });
     try {
-      const response = await dashboardApi.getDashboardSummary();
+      const response = await portfolioApi.getPortfolios();
 
-      if (response.success) {
-        set({ dashboardSummary: response.data || null, isLoading: false });
+      if (response.success && response.data) {
+        // Ensure response.data is an array
+        const portfoliosData = Array.isArray(response.data) ? response.data : [];
+
+        if (portfoliosData.length === 0) {
+          set({
+            dashboardSummary: {
+              totalPortfolios: 0,
+              totalInvestedAmount: 0,
+              totalCurrentValue: 0,
+              totalGainLoss: 0,
+              overallGainLossPercentage: 0,
+              portfolios: [],
+            },
+            isLoading: false,
+          });
+          return;
+        }
+
+        const summary: DashboardSummary = {
+          totalPortfolios: portfoliosData.length,
+          totalInvestedAmount: 0,
+          totalCurrentValue: 0,
+          totalGainLoss: 0,
+          overallGainLossPercentage: 0,
+          portfolios: portfoliosData.map((p: Portfolio) => ({
+            portfolioId: p.id,
+            portfolioName: p.name,
+            totalCurrentValue: 0,
+            totalInvestedAmount: 0,
+            totalGainLoss: 0,
+            gainLossPercentage: '0',
+            numberOfInvestments: 0,
+            investments: [],
+          })),
+        };
+
+        set({ dashboardSummary: summary, isLoading: false });
       } else {
-        set({ isLoading: false, error: response.message });
+        set({ isLoading: false, error: response.message || 'No portfolios found' });
       }
     } catch (error: any) {
-      set({ isLoading: false, error: error.message || 'Failed to fetch dashboard' });
+      const errorMessage = error.message || 'Failed to fetch dashboard';
+      set({ isLoading: false, error: errorMessage });
     }
   },
 
   // ============ UTILITY ACTIONS ============
 
-  // Clear error
+  /**
+   * Clear error message
+   */
   clearError: () => {
     set({ error: null });
   },
 
-  // Reset store
+  /**
+   * Reset store to initial state
+   */
   reset: () => {
     set({
       portfolios: [],

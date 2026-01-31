@@ -19,11 +19,18 @@ export const portfolioApi = {
     try {
       const response = await axiosClient.get(API_ENDPOINTS.PORTFOLIOS.LIST);
 
+      // Normalize to ensure data is always an array
+      const data = Array.isArray(response.data)
+        ? response.data
+        : Array.isArray(response.data?.data)
+          ? response.data.data
+          : [];
+
       return {
         success: true,
         statusCode: 200,
         message: 'Portfolios fetched successfully',
-        data: response.data,
+        data,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -36,11 +43,14 @@ export const portfolioApi = {
     try {
       const response = await axiosClient.get(API_ENDPOINTS.PORTFOLIOS.GET_BY_ID(id));
 
+      // Ensure data is never undefined
+      const data = response.data ?? null;
+
       return {
         success: true,
         statusCode: 200,
         message: 'Portfolio fetched successfully',
-        data: response.data,
+        data,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -53,11 +63,13 @@ export const portfolioApi = {
     try {
       const response = await axiosClient.post(API_ENDPOINTS.PORTFOLIOS.CREATE, payload);
 
+      const data = response.data ?? null;
+
       return {
         success: true,
         statusCode: 201,
         message: 'Portfolio created successfully',
-        data: response.data,
+        data,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -73,11 +85,13 @@ export const portfolioApi = {
     try {
       const response = await axiosClient.put(API_ENDPOINTS.PORTFOLIOS.UPDATE(id), payload);
 
+      const data = response.data ?? null;
+
       return {
         success: true,
         statusCode: 200,
         message: 'Portfolio updated successfully',
-        data: response.data,
+        data,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -106,11 +120,13 @@ export const portfolioApi = {
     try {
       const response = await axiosClient.get(API_ENDPOINTS.PORTFOLIOS.STATS(id));
 
+      const data = response.data ?? null;
+
       return {
         success: true,
         statusCode: 200,
         message: 'Portfolio statistics fetched successfully',
-        data: response.data,
+        data,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {

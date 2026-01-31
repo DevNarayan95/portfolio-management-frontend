@@ -1,11 +1,12 @@
 /**
  * Register Form Component
+ * Compact & Efficient with Enhanced Inputs
  */
 
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth, useForm } from '@hooks';
-import { Input, Button, Alert } from '@components/ui';
+import { Input, PasswordInput, Button, Alert } from '@components/ui';
 import { validators } from '@utils';
 import { ROUTES } from '@constants';
 import { RegisterRequest } from '@types';
@@ -62,9 +63,10 @@ export const RegisterForm: React.FC = () => {
     });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-3">
       {error && <Alert type="error" message={error} onClose={clearError} />}
 
+      {/* Full Name Row */}
       <div className="grid grid-cols-2 gap-3">
         <Input
           label="First Name"
@@ -75,9 +77,11 @@ export const RegisterForm: React.FC = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={touched.firstName ? errors.firstName : ''}
+          variant="default"
+          inputSize="md"
           required
+          disabled={isSubmitting}
         />
-
         <Input
           label="Last Name"
           type="text"
@@ -87,12 +91,16 @@ export const RegisterForm: React.FC = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           error={touched.lastName ? errors.lastName : ''}
+          variant="default"
+          inputSize="md"
           required
+          disabled={isSubmitting}
         />
       </div>
 
+      {/* Email */}
       <Input
-        label="Email Address"
+        label="Email"
         type="email"
         name="email"
         placeholder="you@example.com"
@@ -100,10 +108,14 @@ export const RegisterForm: React.FC = () => {
         onChange={handleChange}
         onBlur={handleBlur}
         error={touched.email ? errors.email : ''}
+        variant="default"
+        inputSize="md"
         fullWidth
         required
+        disabled={isSubmitting}
       />
 
+      {/* Phone */}
       <Input
         label="Phone (Optional)"
         type="tel"
@@ -112,44 +124,68 @@ export const RegisterForm: React.FC = () => {
         value={values.phone || ''}
         onChange={handleChange}
         onBlur={handleBlur}
+        variant="default"
+        inputSize="md"
         fullWidth
+        disabled={isSubmitting}
       />
 
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        placeholder="••••••••"
-        value={values.password}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.password ? errors.password : ''}
-        helperText="At least 8 characters with uppercase, lowercase, number, and special character"
-        fullWidth
-        required
-      />
+      {/* Password Row */}
+      <div className="grid grid-cols-2 gap-3">
+        <PasswordInput
+          label="Password"
+          name="password"
+          placeholder="••••••••"
+          value={values.password}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.password ? errors.password : ''}
+          variant="default"
+          inputSize="md"
+          required
+          disabled={isSubmitting}
+        />
+        <PasswordInput
+          label="Confirm"
+          name="confirmPassword"
+          placeholder="••••••••"
+          value={values.confirmPassword || ''}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={touched.confirmPassword ? errors.confirmPassword : ''}
+          variant="default"
+          inputSize="md"
+          required
+          disabled={isSubmitting}
+        />
+      </div>
 
-      <Input
-        label="Confirm Password"
-        type="password"
-        name="confirmPassword"
-        placeholder="••••••••"
-        value={values.confirmPassword || ''}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        error={touched.confirmPassword ? errors.confirmPassword : ''}
-        fullWidth
-        required
-      />
+      {/* Password requirement hint */}
+      {touched.password && (
+        <p className="text-xs text-gray-500 px-0.5">
+          Min 8 chars: uppercase, lowercase, number & special character
+        </p>
+      )}
 
-      <Button type="submit" fullWidth isLoading={isSubmitting}>
-        Create Account
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        fullWidth
+        isLoading={isSubmitting}
+        disabled={isSubmitting}
+        className="mt-4"
+      >
+        {isSubmitting ? 'Creating Account...' : 'Create Account'}
       </Button>
 
-      <p className="text-center text-sm text-gray-600">
+      {/* Sign In Link */}
+      <p className="text-center text-xs text-gray-600 mt-3">
         Already have an account?{' '}
-        <Link to={ROUTES.LOGIN} className="text-blue-600 hover:text-blue-700 font-medium">
-          Sign in here
+        <Link
+          to={ROUTES.LOGIN}
+          className="text-blue-600 hover:text-blue-700 font-semibold transition-colors"
+        >
+          Sign in
         </Link>
       </p>
     </form>

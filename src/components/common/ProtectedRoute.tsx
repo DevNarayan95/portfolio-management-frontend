@@ -1,6 +1,5 @@
 /**
- * Protected Route Component
- * Guards routes that require authentication
+ * Protected Route Component (DETAILED DEBUGGING)
  */
 
 import React from 'react';
@@ -14,13 +13,17 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   if (!isAuthenticated) {
+    return <Navigate to={ROUTES.LOGIN} replace />;
+  }
+
+  if (!user) {
     return <Navigate to={ROUTES.LOGIN} replace />;
   }
 

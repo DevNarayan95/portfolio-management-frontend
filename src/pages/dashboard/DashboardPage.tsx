@@ -10,8 +10,6 @@ import { Spinner, Card, Button, Alert } from '@components/ui';
 import { usePortfolio } from '@hooks';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@constants';
-import { PortfolioSummary } from '@types';
-
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
   const { dashboardSummary, isLoading, error, fetchDashboardSummary, clearError } = usePortfolio();
@@ -69,14 +67,16 @@ export const DashboardPage: React.FC = () => {
           <Card>
             <div className="text-center py-12">
               <p className="text-gray-600 mb-4">You don't have any portfolios yet</p>
-              <Button onClick={() => navigate(ROUTES.PORTFOLIOS)}>
-                Create Your First Portfolio
-              </Button>
+              <div className="flex justify-center">
+                <Button onClick={() => navigate(ROUTES.PORTFOLIOS)}>
+                  Create Your First Portfolio
+                </Button>
+              </div>
             </div>
           </Card>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dashboardSummary.portfolios.map((portfolio: PortfolioSummary) => (
+            {dashboardSummary.portfolios.map((portfolio) => (
               <PortfolioCard
                 key={portfolio.portfolioId}
                 portfolio={{

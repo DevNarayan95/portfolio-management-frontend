@@ -13,3 +13,4 @@ export { Toast, ToastContainer } from './Toast';
 export { Spinner } from './Spinner';
 export { Tabs } from './Tabs';
 export type { Tab } from './Tabs';
+export { PasswordInput } from './PasswordInput';

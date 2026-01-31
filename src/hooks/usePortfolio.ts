@@ -1,6 +1,5 @@
 /**
- * Custom Hook for Portfolio Management
- * Provides portfolio operations with toast integration
+ * Custom Hook for Portfolio Management (WITH DEBUGGING)
  */
 
 import { useCallback } from 'react';
@@ -36,11 +35,22 @@ export const usePortfolio = () => {
     deleteInvestment: storeDeleteInvestment,
     fetchTransactions,
     createTransaction: storeCreateTransaction,
-    fetchDashboardSummary,
+    fetchDashboardSummary: storeFetchDashboardSummary,
     clearError,
   } = usePortfolioStore();
 
   const { success, error: showError } = useToast();
+
+  // Wrapper for fetchDashboardSummary with debugging
+  const fetchDashboardSummary = useCallback(async () => {
+    console.log('usePortfolio: fetchDashboardSummary called');
+    try {
+      await storeFetchDashboardSummary();
+      console.log('usePortfolio: fetchDashboardSummary completed');
+    } catch (err) {
+      console.error('usePortfolio: fetchDashboardSummary error:', err);
+    }
+  }, [storeFetchDashboardSummary]);
 
   // Create portfolio with toast
   const createPortfolio = useCallback(
@@ -158,31 +168,49 @@ export const usePortfolio = () => {
     error,
 
     // Portfolio actions
-    fetchPortfolios: useCallback(fetchPortfolios, []),
-    fetchPortfolioById: useCallback((id: string) => fetchPortfolioById(id), [fetchPortfolioById]),
+    fetchPortfolios: useCallback(() => {
+      console.log('usePortfolio: fetchPortfolios called');
+      return fetchPortfolios();
+    }, [fetchPortfolios]),
+
+    fetchPortfolioById: useCallback(
+      (id: string) => {
+        console.log('usePortfolio: fetchPortfolioById called with:', id);
+        return fetchPortfolioById(id);
+      },
+      [fetchPortfolioById]
+    ),
+
     createPortfolio,
     updatePortfolio,
     deletePortfolio,
 
     // Investment actions
     fetchInvestments: useCallback(
-      (portfolioId: string) => fetchInvestments(portfolioId),
+      (portfolioId: string) => {
+        console.log('usePortfolio: fetchInvestments called with:', portfolioId);
+        return fetchInvestments(portfolioId);
+      },
       [fetchInvestments]
     ),
+
     createInvestment,
     updateInvestment,
     deleteInvestment,
 
     // Transaction actions
     fetchTransactions: useCallback(
-      (portfolioId: string, filters?: FilterTransactionRequest) =>
-        fetchTransactions(portfolioId, filters),
+      (portfolioId: string, filters?: FilterTransactionRequest) => {
+        console.log('usePortfolio: fetchTransactions called');
+        return fetchTransactions(portfolioId, filters);
+      },
       [fetchTransactions]
     ),
+
     createTransaction,
 
     // Dashboard actions
-    fetchDashboardSummary: useCallback(fetchDashboardSummary, [fetchDashboardSummary]),
+    fetchDashboardSummary,
 
     // Utility
     clearError,

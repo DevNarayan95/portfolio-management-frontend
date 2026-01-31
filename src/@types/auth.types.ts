@@ -8,7 +8,7 @@ export interface User {
   firstName: string;
   lastName: string;
   phone?: string;
-  avatar?: string;
+  // avatar?: string;
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
