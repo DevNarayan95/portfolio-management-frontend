@@ -3,8 +3,8 @@
  * With Enhanced Input and Password Toggle
  */
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth, useForm } from '@hooks';
 import { Input, PasswordInput, Button, Alert } from '@components/ui';
 import { validators } from '@utils';
@@ -12,7 +12,8 @@ import { ROUTES } from '@constants';
 import { LoginRequest } from '@types';
 
 export const LoginForm: React.FC = () => {
-  const { login, error, clearError, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { login, error, clearError, isAuthenticated, isLoading } = useAuth();
 
   const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit } =
     useForm<LoginRequest>({
@@ -35,12 +36,25 @@ export const LoginForm: React.FC = () => {
         clearError();
 
         try {
-          await login(values);
+          const success = await login(values);
+
+          if (success) {
+            // Small delay to ensure state is updated
+            setTimeout(() => {
+              navigate(ROUTES.DASHBOARD);
+            }, 100);
+          }
         } catch (err) {
           console.error('LoginForm: Error:', err);
         }
       },
     });
+
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      navigate(ROUTES.DASHBOARD);
+    }
+  }, [isAuthenticated, isLoading, navigate]);
 
   const isLoggingIn = isSubmitting || isLoading;
 
@@ -83,7 +97,7 @@ export const LoginForm: React.FC = () => {
         type="submit"
         fullWidth
         isLoading={isLoggingIn}
-        disabled={isLoggingIn}
+        disabled={isLoggingIn || isSubmitting}
         className="mt-4"
       >
         {isLoggingIn ? 'Signing in...' : 'Sign In'}

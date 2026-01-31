@@ -3,7 +3,9 @@
  * Layout for login and register pages
  */
 
+import { ROUTES } from '@constants';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -17,7 +19,9 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
       <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="text-4xl font-bold mb-2">💼</div>
+          <div className="text-4xl font-bold mb-2">
+            <Link to={ROUTES.HOME}>💼</Link>
+          </div>
           <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
           {subtitle && <p className="text-gray-600 mt-2">{subtitle}</p>}
         </div>

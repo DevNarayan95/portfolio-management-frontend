@@ -85,7 +85,6 @@ export const PortfolioListPage: React.FC = () => {
         <Card>
           <div className="text-center py-12">
             <p className="text-gray-600 mb-4">You don't have any portfolios yet</p>
-            <Button onClick={() => setIsModalOpen(true)}>Create Your First Portfolio</Button>
           </div>
         </Card>
       ) : (
@@ -121,11 +120,14 @@ export const PortfolioListPage: React.FC = () => {
           setIsModalOpen(false);
           resetForm();
         }}
-        onConfirm={() => handleSubmit({} as React.FormEvent<HTMLFormElement>)}
         confirmText="Create"
         isLoading={isSubmitting}
+        onConfirm={() => {
+          const form = document.getElementById('create-portfolio-form') as HTMLFormElement | null;
+          form?.requestSubmit();
+        }}
       >
-        <form className="space-y-4">
+        <form id="create-portfolio-form" className="space-y-4" onSubmit={handleSubmit}>
           <Input
             label="Portfolio Name"
             type="text"

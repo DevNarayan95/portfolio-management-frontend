@@ -3,7 +3,7 @@
  * Compact & Efficient with Enhanced Inputs
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth, useForm } from '@hooks';
 import { Input, PasswordInput, Button, Alert } from '@components/ui';
@@ -14,6 +14,14 @@ import { RegisterRequest } from '@types';
 export const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
   const { register, error, clearError } = useAuth();
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+
+  // Handle navigation after successful registration
+  useEffect(() => {
+    if (shouldRedirect) {
+      navigate(ROUTES.LOGIN, { replace: true });
+    }
+  }, [shouldRedirect, navigate]);
 
   const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit } =
     useForm<RegisterRequest>({
@@ -57,7 +65,7 @@ export const RegisterForm: React.FC = () => {
           phone: values.phone,
         });
         if (success) {
-          navigate(ROUTES.LOGIN);
+          setShouldRedirect(true);
         }
       },
     });

@@ -100,7 +100,14 @@ export const useAuthStore = create<AuthStore>((set) => ({
       localStorage.setItem('refresh_token', tokens.refreshToken);
       localStorage.setItem('user', JSON.stringify(user));
 
-      set({ isLoading: false });
+      set({
+        user,
+        tokens,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+      });
+
       return true;
     } catch (error: any) {
       const errorMessage = error.message || 'Registration failed';

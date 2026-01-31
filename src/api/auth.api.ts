@@ -19,8 +19,6 @@ export const authApi = {
         phone: payload.phone,
       });
 
-      console.log('Register Response:', response.data);
-
       const apiResponse = response.data;
 
       if (!apiResponse.success) {
@@ -52,8 +50,6 @@ export const authApi = {
         },
       };
 
-      console.log('Transformed Auth Data:', transformedData);
-
       return {
         success: true,
         statusCode: 201,
@@ -62,7 +58,6 @@ export const authApi = {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      console.error('Register Error:', error);
       return handleApiError(error);
     }
   },
@@ -71,8 +66,6 @@ export const authApi = {
   async login(payload: LoginRequest): Promise<ApiResponse<AuthResponse>> {
     try {
       const response = await axiosClient.post(API_ENDPOINTS.AUTH.LOGIN, payload);
-
-      console.log('Login Response:', response.data);
 
       const apiResponse = response.data;
 
@@ -88,11 +81,8 @@ export const authApi = {
       // Extract from response.data.data
       const authData = apiResponse.data;
 
-      console.log('Auth Data:', authData);
-
       // Check if we have the required fields
       if (!authData.email || !authData.firstName || !authData.lastName) {
-        console.error('Missing required fields in auth data:', authData);
         return {
           success: false,
           statusCode: 500,
@@ -102,7 +92,6 @@ export const authApi = {
       }
 
       if (!authData.accessToken || !authData.refreshToken) {
-        console.error('Missing tokens in auth data:', authData);
         return {
           success: false,
           statusCode: 500,
@@ -128,8 +117,6 @@ export const authApi = {
         },
       };
 
-      console.log('Transformed Auth Data:', transformedData);
-
       return {
         success: true,
         statusCode: 200,
@@ -138,7 +125,6 @@ export const authApi = {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      console.error('Login Error:', error);
       return handleApiError(error);
     }
   },
@@ -155,7 +141,6 @@ export const authApi = {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      console.error('Logout Error:', error);
       return handleApiError(error);
     }
   },
@@ -164,9 +149,6 @@ export const authApi = {
   async getCurrentUser(): Promise<ApiResponse<User>> {
     try {
       const response = await axiosClient.get(API_ENDPOINTS.AUTH.CURRENT_USER);
-
-      console.log('getCurrentUser Response:', response.data);
-
       const apiResponse = response.data;
 
       if (!apiResponse.success) {
@@ -192,8 +174,6 @@ export const authApi = {
         updatedAt: userData.updatedAt || new Date().toISOString(),
       };
 
-      console.log('Transformed User Data:', transformedUser);
-
       return {
         success: true,
         statusCode: 200,
@@ -202,7 +182,6 @@ export const authApi = {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      console.error('getCurrentUser Error:', error);
       return handleApiError(error);
     }
   },
@@ -219,8 +198,6 @@ export const authApi = {
           },
         }
       );
-
-      console.log('Refresh Token Response:', response.data);
 
       const apiResponse = response.data;
 
@@ -260,7 +237,6 @@ export const authApi = {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      console.error('Refresh Token Error:', error);
       return handleApiError(error);
     }
   },

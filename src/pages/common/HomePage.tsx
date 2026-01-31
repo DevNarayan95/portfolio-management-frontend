@@ -31,6 +31,7 @@ export const HomePage: React.FC = () => {
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
             <div className="text-2xl md:text-3xl font-bold">💼</div>
+
             <div>
               <h1 className="text-lg md:text-xl sm:text-lg font-bold text-gray-900">
                 Portfolio Manager
@@ -105,6 +106,7 @@ export const HomePage: React.FC = () => {
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight">
                 Manage Your Investments Smarter
               </h2>
+
               <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-6 md:mb-8 leading-relaxed">
                 Track, analyze, and optimize your investment portfolio with ease. Get real-time
                 insights into your portfolio performance.
@@ -132,10 +134,12 @@ export const HomePage: React.FC = () => {
                   <p className="text-2xl md:text-3xl font-bold">10K+</p>
                   <p className="text-xs md:text-sm text-blue-100">Active Users</p>
                 </div>
+
                 <div>
                   <p className="text-2xl md:text-3xl font-bold">$500M+</p>
                   <p className="text-xs md:text-sm text-blue-100">Assets Tracked</p>
                 </div>
+
                 <div>
                   <p className="text-2xl md:text-3xl font-bold">99.9%</p>
                   <p className="text-xs md:text-sm text-blue-100">Uptime</p>
@@ -179,6 +183,7 @@ export const HomePage: React.FC = () => {
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
               Powerful Features
             </h3>
+
             <p className="text-base sm:text-lg md:text-xl text-gray-600 px-2">
               Everything you need to manage your investments effectively
             </p>
@@ -231,6 +236,7 @@ export const HomePage: React.FC = () => {
                 <h4 className="text-lg md:text-2xl font-bold text-gray-900 mb-2 md:mb-3">
                   {feature.title}
                 </h4>
+
                 <p className="text-sm md:text-base text-gray-600 mb-4">{feature.description}</p>
                 <ul className="space-y-2 text-xs md:text-sm text-gray-600">
                   {feature.features.map((f, i) => (
@@ -252,6 +258,7 @@ export const HomePage: React.FC = () => {
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
               How It Works
             </h3>
+
             <p className="text-base sm:text-lg md:text-xl text-gray-600">
               Get started in just 3 simple steps
             </p>
@@ -275,6 +282,7 @@ export const HomePage: React.FC = () => {
                 <div className="w-12 h-12 md:w-16 md:h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-lg md:text-2xl font-bold mx-auto mb-3 md:mb-4">
                   {step.num}
                 </div>
+
                 <h4 className="text-lg md:text-xl font-bold text-gray-900 mb-2">{step.title}</h4>
                 <p className="text-sm md:text-base text-gray-600">{step.desc}</p>
               </div>
@@ -290,6 +298,7 @@ export const HomePage: React.FC = () => {
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
               What Our Users Say
             </h3>
+
             <p className="text-base sm:text-lg md:text-xl text-gray-600">
               Join thousands of investors managing their portfolios
             </p>
@@ -320,13 +329,16 @@ export const HomePage: React.FC = () => {
                 <div className="flex text-yellow-400 text-sm md:text-base mb-3 md:mb-4">
                   {'★'.repeat(5)}
                 </div>
+
                 <p className="text-sm md:text-base text-gray-600 mb-4 md:mb-6">
                   "{testimonial.text}"
                 </p>
+
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs md:text-sm font-bold">
                     {testimonial.avatar}
                   </div>
+
                   <div>
                     <p className="font-bold text-gray-900 text-sm md:text-base">
                       {testimonial.name}
@@ -347,6 +359,7 @@ export const HomePage: React.FC = () => {
             <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
               Simple, Transparent Pricing
             </h3>
+
             <p className="text-base sm:text-lg md:text-xl text-gray-600">
               Choose the plan that works for you
             </p>
@@ -450,6 +463,7 @@ export const HomePage: React.FC = () => {
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 md:mb-6">
             Ready to Take Control of Your Portfolio?
           </h3>
+
           <p className="text-base sm:text-lg md:text-xl text-blue-100 mb-6 md:mb-8">
             Join thousands of investors managing their portfolios smarter with Portfolio Manager.
           </p>
@@ -490,11 +504,13 @@ export const HomePage: React.FC = () => {
                     Features
                   </a>
                 </li>
+
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
                     Pricing
                   </a>
                 </li>
+
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
                     Security
@@ -512,11 +528,13 @@ export const HomePage: React.FC = () => {
                     About Us
                   </a>
                 </li>
+
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
                     Blog
                   </a>
                 </li>
+
                 <li>
                   <a href="#" className="hover:text-white transition-colors">
                     Careers
@@ -531,11 +549,13 @@ export const HomePage: React.FC = () => {
               <ul className="space-y-2 text-xs md:text-sm">
                 <li>support@portfoliomgr.com</li>
                 <li>+1 (555) 123-4567</li>
+
                 <li>
                   <div className="flex gap-3 mt-3">
                     <a href="#" className="hover:text-white transition-colors">
                       Twitter
                     </a>
+
                     <a href="#" className="hover:text-white transition-colors">
                       LinkedIn
                     </a>
@@ -552,9 +572,11 @@ export const HomePage: React.FC = () => {
               <a href="#" className="hover:text-white transition-colors">
                 Privacy Policy
               </a>
+
               <a href="#" className="hover:text-white transition-colors">
                 Terms of Service
               </a>
+
               <a href="#" className="hover:text-white transition-colors">
                 Cookie Policy
               </a>

@@ -66,6 +66,7 @@ export const NotFoundPage: React.FC = () => {
               <h2 className="text-4xl sm:text-5xl font-semibold text-gray-900 mb-4 leading-tight">
                 Page Not Found
               </h2>
+
               <p className="text-lg text-gray-600 max-w-md leading-relaxed">
                 The page you're looking for doesn't exist or has been moved. We're sorry for the
                 inconvenience.
@@ -80,6 +81,7 @@ export const NotFoundPage: React.FC = () => {
                 </span>
                 What you can do:
               </p>
+
               <ul className="text-sm text-gray-700 space-y-2 ml-9">
                 <li>Check the URL for typos</li>
                 <li>Return to the homepage</li>
@@ -99,6 +101,7 @@ export const NotFoundPage: React.FC = () => {
                   Go Home
                 </button>
               </Link>
+
               <button
                 onClick={() => window.history.back()}
                 className="flex-1 py-4 px-6 border-2 border-gray-300 text-gray-900 font-semibold rounded-xl transition-all duration-300 hover:border-blue-400 hover:bg-blue-50 active:bg-blue-100 text-base"
