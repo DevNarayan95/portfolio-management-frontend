@@ -3,20 +3,17 @@
  * User profile and settings management
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { MainLayout } from '@components/layout';
 import { ProfileForm, PasswordChangeForm } from '@components/forms';
 import { Tabs, Spinner, Alert } from '@components/ui';
 import { useAuth } from '@hooks';
 
 export const ProfilePage: React.FC = () => {
-  const { user, isLoading, refreshUser } = useAuth();
+  const { user, isLoading } = useAuth();
 
-  useEffect(() => {
-    refreshUser();
-  }, []);
-
-  if (isLoading) {
+  // Only show spinner on initial load when there's no user data yet
+  if (isLoading && !user) {
     return (
       <MainLayout>
         <Spinner size="lg" color="primary" />
@@ -38,7 +35,7 @@ export const ProfilePage: React.FC = () => {
       label: 'Profile Information',
       content: (
         <div className="max-w-2xl">
-          <ProfileForm user={user} onSuccess={refreshUser} />
+          <ProfileForm user={user} />
         </div>
       ),
     },

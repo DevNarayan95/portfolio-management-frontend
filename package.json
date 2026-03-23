@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "docker:build": "docker build -t pms-frontend .",
+    "docker:up": "docker run -d -p 5173:5173 --name pms-frontend pms-frontend"
   },
   "dependencies": {
     "axios": "^1.6.0",

@@ -208,6 +208,8 @@ export const useAuthStore = create<AuthStore>((set) => ({
           isAuthenticated: true,
           isLoading: false,
         });
+      } else {
+        set({ isLoading: false });
       }
     } catch (error) {
       set({ isLoading: false });
