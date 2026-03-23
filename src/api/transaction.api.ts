@@ -27,11 +27,18 @@ export const transactionApi = {
         payload
       );
 
+      const raw = response.data;
+      const transaction: Transaction = raw?.data?.id
+        ? raw.data
+        : raw?.id
+          ? raw
+          : (raw?.data ?? raw);
+
       return {
         success: true,
         statusCode: 201,
         message: 'Transaction created successfully',
-        data: response.data,
+        data: transaction,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
@@ -43,7 +50,7 @@ export const transactionApi = {
   async getTransactionsByPortfolio(
     portfolioId: string,
     filters?: FilterTransactionRequest
-  ): Promise<ApiResponse<PaginatedResponse<Transaction>>> {
+  ): Promise<ApiResponse<Transaction[]>> {
     try {
       const params = new URLSearchParams();
       if (filters?.type) params.append('type', filters.type);
@@ -56,11 +63,20 @@ export const transactionApi = {
         `${API_ENDPOINTS.TRANSACTIONS.LIST_BY_PORTFOLIO(portfolioId)}?${params.toString()}`
       );
 
+      const raw = response.data;
+      const transactions: Transaction[] = Array.isArray(raw?.data?.data)
+        ? raw.data.data
+        : Array.isArray(raw?.data)
+          ? raw.data
+          : Array.isArray(raw)
+            ? raw
+            : [];
+
       return {
         success: true,
         statusCode: 200,
         message: 'Transactions fetched successfully',
-        data: response.data,
+        data: transactions, // ← always a plain Transaction[]
         timestamp: new Date().toISOString(),
       };
     } catch (error) {

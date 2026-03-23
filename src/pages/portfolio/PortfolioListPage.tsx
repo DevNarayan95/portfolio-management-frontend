@@ -20,12 +20,14 @@ export const PortfolioListPage: React.FC = () => {
     fetchPortfolios,
     createPortfolio,
     clearError,
+    fetchDashboardSummary,
   } = usePortfolio();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetchPortfolios();
+    fetchDashboardSummary();
   }, []);
 
   const {
@@ -54,6 +56,7 @@ export const PortfolioListPage: React.FC = () => {
         resetForm();
         setIsModalOpen(false);
         await fetchPortfolios();
+        await fetchDashboardSummary();
       }
     },
   });
@@ -101,10 +104,10 @@ export const PortfolioListPage: React.FC = () => {
                 key={portfolio.id}
                 portfolio={portfolio}
                 stats={{
-                  totalValue: summary.totalCurrentValue,
-                  totalInvested: summary.totalInvestedAmount,
-                  profit: summary.totalGainLoss,
-                  profitPercentage: parseFloat(summary.gainLossPercentage),
+                  totalValue: summary?.totalCurrentValue ?? 0,
+                  totalInvested: summary?.totalInvestedAmount ?? 0,
+                  profit: summary?.totalGainLoss ?? 0,
+                  profitPercentage: summary ? parseFloat(summary.gainLossPercentage) : 0,
                 }}
               />
             );

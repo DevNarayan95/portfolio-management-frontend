@@ -67,6 +67,7 @@ export const PortfolioDetailPage: React.FC = () => {
         setIsTransactionModalOpen(false);
         setSelectedInvestment(null);
         await fetchTransactions(id);
+        await fetchInvestments(id);
       }
     }
   };
@@ -277,7 +278,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit }) => {
         if (!values.price || values.price <= 0) newErrors.price = 'Price is required';
         return newErrors;
       },
-      onSubmit,
+      onSubmit: (values) =>
+        onSubmit({
+          ...values,
+          quantity: Number(values.quantity),
+          price: Number(values.price),
+          amount: Number(values.quantity) * Number(values.price), // ← this was always 0 before
+        }),
     });
 
   return (

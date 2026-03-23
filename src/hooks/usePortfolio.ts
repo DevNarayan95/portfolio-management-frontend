@@ -56,6 +56,8 @@ export const usePortfolio = () => {
       const result = await storeCreatePortfolio(payload);
       if (result) {
         success(SUCCESS_MESSAGES.PORTFOLIO_CREATED);
+        await fetchPortfolios();
+        await storeFetchDashboardSummary();
         return true;
       } else {
         showError(error || ERROR_MESSAGES.SERVER_ERROR);

@@ -13,11 +13,17 @@ export const investmentApi = {
     try {
       const response = await axiosClient.get(API_ENDPOINTS.INVESTMENTS.LIST(portfolioId));
 
+      const data = Array.isArray(response.data)
+        ? response.data
+        : Array.isArray(response.data?.data)
+          ? response.data.data
+          : [];
+
       return {
         success: true,
         statusCode: 200,
         message: 'Investments fetched successfully',
-        data: response.data,
+        data,
         timestamp: new Date().toISOString(),
       };
     } catch (error) {

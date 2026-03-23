@@ -302,24 +302,8 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await transactionApi.getTransactionsByPortfolio(portfolioId, filters);
-
       if (response.success && response.data != null) {
-        // Normalize every possible API shape into a plain array
-        let transactionsData: Transaction[];
-
-        if (Array.isArray(response.data)) {
-          // Shape 1: plain array  →  response.data = [...]
-          transactionsData = response.data;
-        } else if (Array.isArray((response.data as any).data)) {
-          // Shape 2: paginated    →  response.data = { data: [...], total, page }
-          transactionsData = (response.data as any).data;
-        } else {
-          // Shape 3: unexpected / empty object — fall back to empty array
-          console.warn('fetchTransactions: unexpected response shape', response.data);
-          transactionsData = [];
-        }
-
-        set({ transactions: transactionsData, isLoading: false });
+        set({ transactions: response.data as Transaction[], isLoading: false });
       } else {
         set({ isLoading: false, error: response.message || 'Failed to fetch transactions' });
       }
@@ -341,9 +325,12 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
       const response = await transactionApi.createTransaction(portfolioId, investmentId, payload);
 
       if (response.success && response.data) {
+        const raw = response.data as any;
+        const transaction: Transaction = raw?.id ? raw : (raw?.data ?? raw);
+
         const state = get();
         set({
-          transactions: [...state.transactions, response.data],
+          transactions: [...state.transactions, transaction],
           isLoading: false,
         });
         return true;
@@ -352,8 +339,7 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
         return false;
       }
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to create transaction';
-      set({ isLoading: false, error: errorMessage });
+      set({ isLoading: false, error: error.message || 'Failed to create transaction' });
       return false;
     }
   },
@@ -370,7 +356,6 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
       const response = await portfolioApi.getPortfolios();
 
       if (response.success && response.data) {
-        // Ensure response.data is an array
         const portfoliosData = Array.isArray(response.data) ? response.data : [];
 
         if (portfoliosData.length === 0) {
@@ -388,31 +373,72 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
           return;
         }
 
-        const summary: DashboardSummary = {
-          totalPortfolios: portfoliosData.length,
-          totalInvestedAmount: 0,
-          totalCurrentValue: 0,
-          totalGainLoss: 0,
-          overallGainLossPercentage: 0,
-          portfolios: portfoliosData.map((p: Portfolio) => ({
+        const investmentResults = await Promise.all(
+          portfoliosData.map((p: Portfolio) =>
+            investmentApi.getInvestments(p.id).catch(() => ({ success: false, data: [] }))
+          )
+        );
+
+        let totalInvestedAmount = 0;
+        let totalCurrentValue = 0;
+
+        const portfolioSummaries = portfoliosData.map((p: Portfolio, index: number) => {
+          const result = investmentResults[index];
+          const raw = result.success && result.data ? result.data : [];
+          const investments: Investment[] = Array.isArray(raw)
+            ? raw
+            : Array.isArray((raw as any).data)
+              ? (raw as any).data
+              : [];
+
+          // Calculate per-portfolio stats from investments
+          const totalInvested = investments.reduce(
+            (sum, inv) => sum + Number(inv.purchasePrice) * Number(inv.quantity),
+            0
+          );
+          const totalValue = investments.reduce(
+            (sum, inv) => sum + Number(inv.currentPrice) * Number(inv.quantity),
+            0
+          );
+          const gainLoss = totalValue - totalInvested;
+          const gainLossPercentage =
+            totalInvested > 0 ? ((gainLoss / totalInvested) * 100).toFixed(2) : '0';
+
+          totalInvestedAmount += totalInvested;
+          totalCurrentValue += totalValue;
+
+          return {
             portfolioId: p.id,
             portfolioName: p.name,
-            totalCurrentValue: 0,
-            totalInvestedAmount: 0,
-            totalGainLoss: 0,
-            gainLossPercentage: '0',
-            numberOfInvestments: 0,
-            investments: [],
-          })),
-        };
+            totalCurrentValue: totalValue,
+            totalInvestedAmount: totalInvested,
+            totalGainLoss: gainLoss,
+            gainLossPercentage,
+            numberOfInvestments: investments.length,
+            investments,
+          };
+        });
 
-        set({ dashboardSummary: summary, isLoading: false });
+        const totalGainLoss = totalCurrentValue - totalInvestedAmount;
+        const overallGainLossPercentage =
+          totalInvestedAmount > 0 ? (totalGainLoss / totalInvestedAmount) * 100 : 0;
+
+        set({
+          dashboardSummary: {
+            totalPortfolios: portfoliosData.length,
+            totalInvestedAmount,
+            totalCurrentValue,
+            totalGainLoss,
+            overallGainLossPercentage,
+            portfolios: portfolioSummaries,
+          },
+          isLoading: false,
+        });
       } else {
         set({ isLoading: false, error: response.message || 'No portfolios found' });
       }
     } catch (error: any) {
-      const errorMessage = error.message || 'Failed to fetch dashboard';
-      set({ isLoading: false, error: errorMessage });
+      set({ isLoading: false, error: error.message || 'Failed to fetch dashboard' });
     }
   },
 
