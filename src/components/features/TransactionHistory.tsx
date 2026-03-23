@@ -16,13 +16,33 @@ interface TransactionHistoryProps {
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions }) => {
   const [filter, setFilter] = useState<TransactionType | 'ALL'>('ALL');
 
+  const safeTransactions = Array.isArray(transactions) ? transactions : [];
+
   const filteredTransactions =
-    filter === 'ALL' ? transactions : transactions.filter((txn) => txn.type === filter);
+    filter === 'ALL' ? safeTransactions : safeTransactions.filter((txn) => txn.type === filter);
 
   if (filteredTransactions.length === 0) {
     return (
       <Card>
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Transaction History</h3>
+
+        {safeTransactions.length > 0 && (
+          <div className="flex justify-end mb-4">
+            <div className="flex gap-2">
+              {(['ALL', TransactionType.BUY, TransactionType.SELL] as const).map((type) => (
+                <Button
+                  key={type}
+                  variant={filter === type ? 'primary' : 'secondary'}
+                  size="sm"
+                  onClick={() => setFilter(type)}
+                >
+                  {type === 'ALL' ? 'All' : TRANSACTION_TYPES[type]}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="text-center py-8">
           <p className="text-gray-600">No transactions found</p>
         </div>

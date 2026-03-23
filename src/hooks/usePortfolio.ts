@@ -43,10 +43,8 @@ export const usePortfolio = () => {
 
   // Wrapper for fetchDashboardSummary with debugging
   const fetchDashboardSummary = useCallback(async () => {
-    console.log('usePortfolio: fetchDashboardSummary called');
     try {
       await storeFetchDashboardSummary();
-      console.log('usePortfolio: fetchDashboardSummary completed');
     } catch (err) {
       console.error('usePortfolio: fetchDashboardSummary error:', err);
     }
@@ -169,13 +167,11 @@ export const usePortfolio = () => {
 
     // Portfolio actions
     fetchPortfolios: useCallback(() => {
-      console.log('usePortfolio: fetchPortfolios called');
       return fetchPortfolios();
     }, [fetchPortfolios]),
 
     fetchPortfolioById: useCallback(
       (id: string) => {
-        console.log('usePortfolio: fetchPortfolioById called with:', id);
         return fetchPortfolioById(id);
       },
       [fetchPortfolioById]
@@ -188,7 +184,6 @@ export const usePortfolio = () => {
     // Investment actions
     fetchInvestments: useCallback(
       (portfolioId: string) => {
-        console.log('usePortfolio: fetchInvestments called with:', portfolioId);
         return fetchInvestments(portfolioId);
       },
       [fetchInvestments]
@@ -201,7 +196,6 @@ export const usePortfolio = () => {
     // Transaction actions
     fetchTransactions: useCallback(
       (portfolioId: string, filters?: FilterTransactionRequest) => {
-        console.log('usePortfolio: fetchTransactions called');
         return fetchTransactions(portfolioId, filters);
       },
       [fetchTransactions]

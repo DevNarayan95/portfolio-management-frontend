@@ -197,7 +197,22 @@ export const PortfolioDetailPage: React.FC = () => {
         />
       </Modal>
 
-      {/* Transaction Modal */}
+      {/*
+        Transaction Modal
+
+        FIX 1 — key warning: Replaced outer <form> with <div>. React reconciles
+        list children relative to their nearest enclosing element. When that element
+        is a <form> that also contains a conditionally-rendered <TransactionForm>
+        (another <form>), the reconciler gets confused about sibling identity and
+        emits the "unique key" warning even though individual <option> keys are set.
+
+        FIX 2 — nested forms: <form> inside <form> is invalid HTML. Browsers
+        silently drop the inner form, so TransactionForm's handleSubmit never fired.
+
+        FIX 3 — placeholder key: Added key="placeholder" to the static default
+        <option>. React requires every sibling in a mixed static+dynamic list to
+        have a key, including manually written nodes that sit alongside a .map().
+      */}
       <Modal
         isOpen={isTransactionModalOpen}
         title="Add New Transaction"
@@ -207,7 +222,7 @@ export const PortfolioDetailPage: React.FC = () => {
         }}
         size="md"
       >
-        <form className="space-y-4">
+        <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Select Investment
@@ -217,7 +232,9 @@ export const PortfolioDetailPage: React.FC = () => {
               onChange={(e) => setSelectedInvestment(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">Choose an investment...</option>
+              <option key="placeholder" value="">
+                Choose an investment...
+              </option>
               {investments.map((inv: Investment) => (
                 <option key={inv.id} value={inv.id}>
                   {inv.name} ({inv.symbol})
@@ -229,7 +246,7 @@ export const PortfolioDetailPage: React.FC = () => {
           {selectedInvestment && (
             <TransactionForm investmentId={selectedInvestment} onSubmit={handleCreateTransaction} />
           )}
-        </form>
+        </div>
       </Modal>
     </MainLayout>
   );
@@ -244,27 +261,122 @@ interface TransactionFormProps {
 }
 
 const TransactionForm: React.FC<TransactionFormProps> = ({ onSubmit }) => {
-  const { isSubmitting, handleSubmit } = useForm<CreateTransactionRequest>({
-    initialValues: {
-      type: TransactionType.BUY,
-      quantity: 0,
-      price: 0,
-      amount: 0,
-      transactionDate: new Date().toISOString().split('T')[0],
-      notes: '',
-    },
-    validate: (values) => {
-      const newErrors: { [key: string]: string } = {};
-      if (!values.quantity || values.quantity <= 0) newErrors.quantity = 'Quantity is required';
-      if (!values.price || values.price <= 0) newErrors.price = 'Price is required';
-      return newErrors;
-    },
-    onSubmit,
-  });
+  const { values, errors, touched, isSubmitting, handleChange, handleBlur, handleSubmit } =
+    useForm<CreateTransactionRequest>({
+      initialValues: {
+        type: TransactionType.BUY,
+        quantity: 0,
+        price: 0,
+        amount: 0,
+        transactionDate: new Date().toISOString().split('T')[0],
+        notes: '',
+      },
+      validate: (values) => {
+        const newErrors: { [key: string]: string } = {};
+        if (!values.quantity || values.quantity <= 0) newErrors.quantity = 'Quantity is required';
+        if (!values.price || values.price <= 0) newErrors.price = 'Price is required';
+        return newErrors;
+      },
+      onSubmit,
+    });
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Form fields would go here */}
+      {/* Transaction Type */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Transaction Type</label>
+        <select
+          name="type"
+          value={values.type}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+        >
+          <option value={TransactionType.BUY}>Buy</option>
+          <option value={TransactionType.SELL}>Sell</option>
+        </select>
+      </div>
+
+      {/* Quantity */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+        <input
+          type="number"
+          name="quantity"
+          placeholder="Enter quantity"
+          value={values.quantity}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          step="0.01"
+          min="0"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+        />
+        {touched.quantity && errors.quantity && (
+          <p className="mt-1 text-sm text-red-600">{errors.quantity}</p>
+        )}
+      </div>
+
+      {/* Price */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Price per Unit</label>
+        <input
+          type="number"
+          name="price"
+          placeholder="Enter price"
+          value={values.price}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          step="0.01"
+          min="0"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+        />
+        {touched.price && errors.price && (
+          <p className="mt-1 text-sm text-red-600">{errors.price}</p>
+        )}
+      </div>
+
+      {/* Total Amount (read-only, derived) */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Total Amount</label>
+        <input
+          type="number"
+          readOnly
+          value={
+            values.quantity && values.price
+              ? (Number(values.quantity) * Number(values.price)).toFixed(2)
+              : 0
+          }
+          className="w-full px-4 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600"
+        />
+      </div>
+
+      {/* Transaction Date */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Transaction Date</label>
+        <input
+          type="date"
+          name="transactionDate"
+          value={values.transactionDate}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+        />
+      </div>
+
+      {/* Notes */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Notes (optional)</label>
+        <textarea
+          name="notes"
+          placeholder="Add any notes about this transaction"
+          value={values.notes}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          rows={2}
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 resize-none"
+        />
+      </div>
+
       <Button type="submit" fullWidth isLoading={isSubmitting}>
         Add Transaction
       </Button>

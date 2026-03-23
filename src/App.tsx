@@ -70,7 +70,7 @@ const AppContent: React.FC = () => {
               }
             />
             <Route
-              path="/portfolios/:id"
+              path={ROUTES.PORTFOLIO_DETAIL(':id')}
               element={
                 <ProtectedRoute>
                   <PortfolioDetailPage />

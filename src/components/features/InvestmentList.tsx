@@ -15,13 +15,41 @@ interface InvestmentListProps {
   isLoading?: boolean;
 }
 
+function normaliseInvestment(raw: any, fallbackIndex: number): Investment & { _key: string } {
+  // Resolve id — try every common backend convention
+  const id = raw.id ?? raw._id ?? raw.investment_id ?? '';
+
+  return {
+    _key: id !== '' ? String(id) : `inv-${fallbackIndex}`,
+    id: String(id),
+    name: raw.name ?? '-',
+    symbol: raw.symbol ?? '-',
+    type: raw.type ?? '',
+    quantity: Number(raw.quantity ?? 0),
+    currentPrice: Number(raw.currentPrice ?? raw.current_price ?? 0),
+    purchasePrice: Number(raw.purchasePrice ?? raw.purchase_price ?? 0),
+    purchaseDate: raw.purchaseDate ?? raw.purchase_date ?? '',
+    notes: raw.notes ?? '',
+    isSIP: raw.isSIP ?? raw.is_sip ?? false,
+    sipAmount: raw.sipAmount ?? raw.sip_amount,
+    sipStartDate: raw.sipStartDate ?? raw.sip_start_date,
+    sipDuration: raw.sipDuration ?? raw.sip_duration,
+    portfolioId: raw.portfolioId ?? raw.portfolio_id ?? '',
+    createdAt: raw.createdAt ?? raw.created_at ?? '',
+    updatedAt: raw.updatedAt ?? raw.updated_at ?? '',
+  };
+}
+
 export const InvestmentList: React.FC<InvestmentListProps> = ({
   investments,
   onEdit,
   onDelete,
   isLoading = false,
 }) => {
-  if (investments.length === 0) {
+  // Guard against the store accidentally setting investments to a non-array
+  const safeInvestments = Array.isArray(investments) ? investments : [];
+
+  if (safeInvestments.length === 0) {
     return (
       <Card>
         <div className="text-center py-8">
@@ -33,19 +61,21 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
 
   return (
     <div className="space-y-4">
-      {investments.map((investment) => {
+      {safeInvestments.map((raw, index) => {
+        const investment = normaliseInvestment(raw, index);
+
         const { profit, profitPercentage } = helpers.calculateProfit(
           investment.currentPrice,
           investment.purchasePrice,
           investment.quantity
         );
         const totalValue = investment.currentPrice * investment.quantity;
-        // const totalInvested = investment.purchasePrice * investment.quantity;
         const textColor = helpers.getProfitColor(profit);
         const bgColor = helpers.getProfitBgColor(profit);
 
         return (
-          <Card key={investment.id} hover className="p-4">
+          // key uses _key — always a unique string even when id is undefined
+          <Card key={investment._key} hover className="p-4">
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-3">
@@ -55,19 +85,16 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {/* Symbol */}
                   <div>
                     <p className="text-xs text-gray-600">Symbol</p>
                     <p className="font-semibold text-gray-900">{investment.symbol}</p>
                   </div>
 
-                  {/* Quantity */}
                   <div>
                     <p className="text-xs text-gray-600">Quantity</p>
                     <p className="font-semibold text-gray-900">{investment.quantity}</p>
                   </div>
 
-                  {/* Current Price */}
                   <div>
                     <p className="text-xs text-gray-600">Current Price</p>
                     <p className="font-semibold text-gray-900">
@@ -75,7 +102,6 @@ export const InvestmentList: React.FC<InvestmentListProps> = ({
                     </p>
                   </div>
 
-                  {/* Purchase Price */}
                   <div>
                     <p className="text-xs text-gray-600">Purchase Price</p>
                     <p className="font-semibold text-gray-900">

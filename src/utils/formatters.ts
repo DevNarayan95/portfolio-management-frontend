@@ -6,11 +6,14 @@ import { CURRENCY_CONFIG } from '@constants';
 
 export const formatters = {
   // Format currency
-  currency: (value: number): string => {
-    return `${CURRENCY_CONFIG.SYMBOL} ${value.toLocaleString(CURRENCY_CONFIG.LOCALE, {
-      minimumFractionDigits: CURRENCY_CONFIG.DECIMAL_PLACES,
-      maximumFractionDigits: CURRENCY_CONFIG.DECIMAL_PLACES,
-    })}`;
+  currency: (value: number | undefined | null, locale = 'en-MY', currency = 'MYR'): string => {
+    if (value == null || isNaN(value as number)) return 'RM0.00';
+    return Number(value).toLocaleString(locale, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   },
 
   // Format percentage

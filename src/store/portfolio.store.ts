@@ -303,10 +303,22 @@ export const usePortfolioStore = create<PortfolioStore>((set, get) => ({
     try {
       const response = await transactionApi.getTransactionsByPortfolio(portfolioId, filters);
 
-      if (response.success && response.data) {
-        const transactionsData = Array.isArray(response.data)
-          ? response.data
-          : response.data.data || [];
+      if (response.success && response.data != null) {
+        // Normalize every possible API shape into a plain array
+        let transactionsData: Transaction[];
+
+        if (Array.isArray(response.data)) {
+          // Shape 1: plain array  →  response.data = [...]
+          transactionsData = response.data;
+        } else if (Array.isArray((response.data as any).data)) {
+          // Shape 2: paginated    →  response.data = { data: [...], total, page }
+          transactionsData = (response.data as any).data;
+        } else {
+          // Shape 3: unexpected / empty object — fall back to empty array
+          console.warn('fetchTransactions: unexpected response shape', response.data);
+          transactionsData = [];
+        }
+
         set({ transactions: transactionsData, isLoading: false });
       } else {
         set({ isLoading: false, error: response.message || 'Failed to fetch transactions' });
